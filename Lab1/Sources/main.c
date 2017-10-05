@@ -21,15 +21,15 @@ int main() {
 int IIR_C(float* InputArray, float* OutputArray, float* coeff, int Length, int Order) {
 	int n, k;
 	for (n = 0; n < Length; n++) {
-        int min = Order + 1 > n + 1 ? n + 1 : Order + 1;
+        int min = Order > n ? n: Order;
         OutputArray[n] = 0;
-        for (k = 0 ; k < min; k++) {
+        for (k = 0 ; k < min + 1; k++) {
             OutputArray[n] += coeff[k] * InputArray[n - k];
 
             if (k > 0 && min > 0) {
                 OutputArray[n] += coeff[k + Order] * OutputArray[n - k];
             }
         }
-	}
+    }
 	return 0;
 }
