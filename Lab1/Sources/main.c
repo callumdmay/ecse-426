@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-//#include "arm_math.h"
+#include "arm_math.h"
 
 int IIR_C(float* InputArray, float* OutputArray, float* coeff, int Length, int Order);
 	
