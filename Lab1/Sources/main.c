@@ -1,15 +1,18 @@
 #include <stdio.h>
-#include "arm_math.h"
+#include <stdlib.h>
+//#include "arm_math.h"
 
 int IIR_C(float* InputArray, float* OutputArray, float* coeff, int Length, int Order);
 	
-int main()
-{
-float inputArray[10] = {1,2,3,4,5,6,7,8,9,10};
+int main() {
+    float inputArray[6] = {1,2,3,4,5,6};
+    float outputArray[6];
+    int length = 6;
 
-float coeffArray[5] = {0.1,0.15,0.5,0.15,0.1};
-float outputArray[5];
-IIR_C(inputArray, outputArray, coeffArray, 5, 2);
+    int order = 3;
+    float coeffArray[5] = {0.1,0.15,0.5,0.15,0.1, 0.1, 0.15};
+
+    IIR_C(inputArray, outputArray, coeffArray, length, order);
 
 	return 0;
 }
@@ -17,15 +20,16 @@ IIR_C(inputArray, outputArray, coeffArray, 5, 2);
 
 int IIR_C(float* InputArray, float* OutputArray, float* coeff, int Length, int Order) {
 	int n, k;
-	for (n = 0; n < Length ; n++) {
-		OutputArray[n] = coeff[0] * InputArray[n];
-		if (n >= 1) {
-			OutputArray[n] += coeff[1] * InputArray[n - 1] + coeff[3] * OutputArray[n - 1];
-		}
-		
-		if (n >=2) {
-			OutputArray[n] += coeff[2] * InputArray[n - 2] + coeff[4] * OutputArray[n - 2] ;
-		}
+	for (n = 0; n < Length; n++) {
+        int min = Order + 1 > n + 1 ? n + 1 : Order + 1;
+        OutputArray[n] = 0;
+        for (k = 0 ; k < min; k++) {
+            OutputArray[n] += coeff[k] * InputArray[n - k];
+
+            if (k > 0 && min > 0) {
+                OutputArray[n] += coeff[k + Order] * OutputArray[n - k];
+            }
+        }
 	}
 	return 0;
 }
