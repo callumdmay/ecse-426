@@ -5,12 +5,12 @@
 int IIR_C(float* InputArray, float* OutputArray, float* coeff, int Length, int Order);
 	
 int main() {
-    float inputArray[6] = {1,2,3,4,5,6};
-    float outputArray[6];
-    int length = 6;
+    float inputArray[5] = {1,2,3,4,5};
+    float outputArray[5];
+    int length = 5;
 
-    int order = 3;
-    float coeffArray[5] = {0.1,0.15,0.5,0.15,0.1, 0.1, 0.15};
+    int order = 2;
+    float coeffArray[5] = {0.1,0.15,0.5,0.15,0.1};
 
     IIR_C(inputArray, outputArray, coeffArray, length, order);
 
