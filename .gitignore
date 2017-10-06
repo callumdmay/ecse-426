@@ -1,7 +1,7 @@
 cmake-build-debug
 .idea/workspace.xml
 .idea/tasks.xml
-
+Lab1/Objects
 # Prerequisites
 *.d
 
