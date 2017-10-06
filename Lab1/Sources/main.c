@@ -30,6 +30,7 @@ int IIR_C(float* InputArray, float* OutputArray, float* coeff, int Length, int O
                 OutputArray[n] += coeff[k + Order] * OutputArray[n - k];
             }
         }
+				printf("%f\n", OutputArray[n]);
     }
 	return 0;
 }
