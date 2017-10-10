@@ -3,7 +3,7 @@
 #include "arm_math.h"
 
 int IIR_C(float* InputArray, float* OutputArray, float* coeff, int Length, int Order);
-extern int IIR_asm(float* inputArray, float* OutputArray, int Lenfth, float_ coeff)
+extern int IIR_asm(float* inputArray, float* OutputArray, int Length, float* coeff);
 
 
 int main() {
@@ -15,16 +15,28 @@ int main() {
     float coeffArray[5] = {0.1,0.15,0.5,0.15,0.1};
 
     IIR_C(inputArray, outputArray, coeffArray, length, order);
+		printf("C Output:\n");
 		int i;
 		for (i = 0; i < length; i++) {
 			printf("%f ", outputArray[i]);
 		}
-		printf("\n Arm Output:\n");
-    IIR_asm(inputArray, outputArray, coeffArray, length, order);
+		
+		printf("\nArm Output:\n");
+    IIR_asm(inputArray, outputArray,length, coeffArray);
 		for (i = 0; i < length; i++) {
 			printf("%f ", outputArray[i]);
 		}
-
+		
+		
+		printf("\nCMSIS Output:\n");
+		float initial_state[4] = {0};
+		arm_biquad_casd_df1_inst_f32 S1 = {1, initial_state, coeffArray};
+		
+		arm_biquad_cascade_df1_f32(&S1, inputArray, outputArray, 5);
+		for (i = 0; i < length; i++) {
+			printf("%f ", outputArray[i]);
+		}
+		
 		return 0;
 }
 
@@ -41,7 +53,6 @@ int IIR_C(float* InputArray, float* OutputArray, float* coeff, int Length, int O
                 OutputArray[n] += coeff[k + Order] * OutputArray[n - k];
             }
         }
-				printf("%f\n", OutputArray[n]);
     }
 	return 0;
 }
