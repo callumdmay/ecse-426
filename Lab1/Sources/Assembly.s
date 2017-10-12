@@ -11,8 +11,12 @@ ENTRY
 
 IIR_asm
 	
-	PUSH 			{R5, R4, LR}		; push onto stack
-	MOV 				R4, #0				; value of n
+	PUSH 		{R5, R4, LR}		; push onto stack
+	MOV 			R4, #0				; value of n
+    VMOV    	S3, R4  				; value of x[n-1]
+    VMOV     	S4, R4    			; value of x[n-2]
+    VMOV    	S5, R4  	  			; value of y[n-1]
+    VMOV    	S6, R4   		 	; value of y[n-2]
 	
 Filter								
 	; For index n
@@ -36,7 +40,7 @@ Filter
 
 ;store output and load values for next itteration
 Store								
-	VMOV.F32 		S6, S5				; y[n-2] <- y[n-1]displ
+	VMOV.F32 		S6, S5				; y[n-2] <- y[n-1]
 	VMOV.F32 		S5, S7				; y[n-1] <- y[n]
 	VSTR 			S7, [R1], #4		; store result in index "n" of output array and increase output array address by 4 bits (next index)
 	VMOV.F32 		S4, S3				; x[n-2]<- x[n-1]
