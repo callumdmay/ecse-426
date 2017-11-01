@@ -33,13 +33,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
-#include "lis3dsh.h"
 #include "keypad.h"
 #include "clock.h"
+#include "accelerometer.h"
 
-LIS3DSH_InitTypeDef 		Acc_instance;
 /* Private variables ---------------------------------------------------------*/
-
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -51,11 +49,7 @@ int SysTickCount;
 
 int main(void)
 {
-	uint8_t status;
-	float Buffer[3];
-	float accX, accY, accZ;
-
-	initializeACC	();
+	initializeACC();
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
@@ -78,19 +72,7 @@ int main(void)
 	// an example of pulse division.
 		if (SysTickCount % 100 == 0) 
 		{			
-				LIS3DSH_Read (&status, LIS3DSH_STATUS, 1);
-				//The first four bits denote if we have new data on all XYZ axes, 
-		   	//Z axis only, Y axis only or Z axis only. If any or all changed, proceed
-				if ((status & 0x0F) != 0x00)
-				{
-			
-					LIS3DSH_ReadACC(&Buffer[0]);
-					accX = (float)Buffer[0];
-					accY = (float)Buffer[1];
-					accZ = (float)Buffer[2];
-					//printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
-					HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
-				}
+				printACC();
 				if (scanKeypad() != '\0'){
 					printf("Key: %c\n", scanKeypad());
 				}
@@ -99,28 +81,6 @@ int main(void)
 		
 		SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;	
   }
-}
-
-
-
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
-void initializeACC(void){
-	
-	Acc_instance.Axes_Enable				= LIS3DSH_XYZ_ENABLE;
-	Acc_instance.AA_Filter_BW				= LIS3DSH_AA_BW_50;
-	Acc_instance.Full_Scale					= LIS3DSH_FULLSCALE_2;
-	Acc_instance.Power_Mode_Output_DataRate		= LIS3DSH_DATARATE_25;
-	Acc_instance.Self_Test					= LIS3DSH_SELFTEST_NORMAL;
-	Acc_instance.Continous_Update   = LIS3DSH_ContinousUpdate_Enabled;
-	
-	LIS3DSH_Init(&Acc_instance);	
-	
-	/* Enabling interrupt conflicts with push button. Be careful when you plan to 
-	use the interrupt of the accelerometer sensor connceted to PIN A.0
-
-	*/
 }
 
 #ifdef USE_FULL_ASSERT

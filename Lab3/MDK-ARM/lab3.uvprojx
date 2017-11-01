@@ -503,6 +503,16 @@
               <FileType>5</FileType>
               <FilePath>..\Src\clock.h</FilePath>
             </File>
+            <File>
+              <FileName>accelerometer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\accelerometer.c</FilePath>
+            </File>
+            <File>
+              <FileName>accelerometer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Src\accelerometer.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
