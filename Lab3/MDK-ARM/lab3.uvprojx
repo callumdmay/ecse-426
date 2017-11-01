@@ -493,6 +493,16 @@
               <FileType>5</FileType>
               <FilePath>..\Src\keypad.h</FilePath>
             </File>
+            <File>
+              <FileName>clock.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\clock.c</FilePath>
+            </File>
+            <File>
+              <FileName>clock.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Src\clock.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
