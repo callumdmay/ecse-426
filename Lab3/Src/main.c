@@ -65,8 +65,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-
-  while (1)
+	
+	initKeypad();
+  
+	while (1)
   {
 	//SysTickCount runs at 1000Hz
 	/* this is just an example of reading the Accelerometer data in polling technique. You are
@@ -74,11 +76,7 @@ int main(void)
 		In fact, the Accl IC will generate data at a certain rate that you have to configure it.
 	*/
 	// an example of pulse division.
-		if (SysTickCount % 200 == 0) {
-			printf("\n");
-		}
-		printf("tick\n");
-		if (SysTickCount % 500 == 0) 
+		if (SysTickCount % 100 == 0) 
 		{			
 				LIS3DSH_Read (&status, LIS3DSH_STATUS, 1);
 				//The first four bits denote if we have new data on all XYZ axes, 
@@ -91,12 +89,12 @@ int main(void)
 					accY = (float)Buffer[1];
 					accZ = (float)Buffer[2];
 					//printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
-					//HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
+					HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
 				}
-				printf("tick\n");
 				if (scanKeypad() != '\0'){
 					printf("Key: %c\n", scanKeypad());
 				}
+				printf("\n");
 		}
 		
 		SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;	

@@ -1,0 +1,86 @@
+#include "keypad.h"
+#include "stm32f4xx_hal.h"
+#include "gpio.h"
+
+GPIO_InitTypeDef GPIO_InitDef_Row;
+GPIO_InitTypeDef GPIO_InitDef_Col;
+
+//Initialize GPIO pins
+void initKeypad(void) {
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	
+	//Using E7 - E13
+	GPIO_InitDef_Row.Pin = GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10;
+	GPIO_InitDef_Row.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitDef_Row.Pull = GPIO_PULLDOWN;
+	GPIO_InitDef_Row.Speed = GPIO_SPEED_HIGH;
+	
+	GPIO_InitDef_Col.Pin = GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13;
+	GPIO_InitDef_Col.Mode = GPIO_MODE_INPUT;
+	GPIO_InitDef_Col.Pull = GPIO_PULLDOWN;
+	GPIO_InitDef_Col.Speed = GPIO_SPEED_HIGH;
+	
+	//init the structures 
+	HAL_GPIO_Init(GPIOE, &GPIO_InitDef_Row);
+	HAL_GPIO_Init(GPIOE, &GPIO_InitDef_Col);
+}
+
+char scanKeypad(void) {
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
+	if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_11) == 1) {
+		return '1';
+	}
+	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_12) == 1) {
+		return '2';
+	}
+	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13) == 1) {
+		return '3';
+	}
+	
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
+	if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_11) == 1) {
+		return '4';
+	}
+	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_12) == 1) {
+		return '5';
+	}
+	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13) == 1) {
+		return '6';
+	}
+	
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
+	if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_11) == 1) {
+		return '7';
+	}
+	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_12) == 1) {
+		return '8';
+	}
+	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13) == 1) {
+		return '9';
+	}
+	
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_SET);
+	if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_11) == 1) {
+		return '*';
+	}
+	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_12) == 1) {
+		return '0';
+	}
+	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13) == 1) {
+		return '#';
+	}
+	
+	return '\0';
+}

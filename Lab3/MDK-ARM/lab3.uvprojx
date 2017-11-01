@@ -483,6 +483,16 @@
               <FileType>5</FileType>
               <FilePath>..\Inc\LIS3DSH.h</FilePath>
             </File>
+            <File>
+              <FileName>keypad.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\keypad.c</FilePath>
+            </File>
+            <File>
+              <FileName>keypad.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Src\keypad.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
