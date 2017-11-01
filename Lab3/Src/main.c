@@ -34,6 +34,7 @@
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
 #include "lis3dsh.h"
+#include "keypad.h"
 
 
 LIS3DSH_InitTypeDef 		Acc_instance;
@@ -67,13 +68,17 @@ int main(void)
 
   while (1)
   {
-
+	//SysTickCount runs at 1000Hz
 	/* this is just an example of reading the Accelerometer data in polling technique. You are
 		required to read value in interrupt mode automatically, without requestin for a new data every time.
 		In fact, the Accl IC will generate data at a certain rate that you have to configure it.
 	*/
 	// an example of pulse division.
-		if (SysTickCount ==20) 
+		if (SysTickCount % 200 == 0) {
+			printf("\n");
+		}
+		printf("tick\n");
+		if (SysTickCount % 500 == 0) 
 		{			
 				LIS3DSH_Read (&status, LIS3DSH_STATUS, 1);
 				//The first four bits denote if we have new data on all XYZ axes, 
@@ -85,16 +90,17 @@ int main(void)
 					accX = (float)Buffer[0];
 					accY = (float)Buffer[1];
 					accZ = (float)Buffer[2];
-					printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
-					HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
+					//printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", accX, accY, accZ , (int)(Buffer[0]));
+					//HAL_GPIO_TogglePin(GPIOD,GPIO_PIN_13);
 				}
-			SysTickCount=0;
-			}
+				printf("tick\n");
+				if (scanKeypad() != '\0'){
+					printf("Key: %c\n", scanKeypad());
+				}
+		}
 		
-
+		SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;	
   }
-
-
 }
 
 /** System Clock Configuration
