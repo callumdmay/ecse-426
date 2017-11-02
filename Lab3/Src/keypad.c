@@ -143,3 +143,36 @@ void updateKeypadState(struct keypadState *state, char val) {
 			break;
 	}
 }
+
+void processKeypadInput(struct keypadState *kpState) {
+	static int debounce_counter = 0;
+	static int debounce_down_counter = 5;
+	static char last_char = '\0';
+
+	char keypad_char = scanKeypad();
+	if (keypad_char != '\0') {
+		if (last_char == '\0') {
+			debounce_counter = 0;
+		}
+		last_char = keypad_char;
+
+		debounce_counter++;
+		} else {
+			if (debounce_counter > 5 && debounce_down_counter > 0) {
+				debounce_down_counter--;
+			} else {
+				if (debounce_counter >= 60 && last_char == '#') {
+					kpState->operation_mode = true;
+				} else if (debounce_counter >= 60 && last_char == '*') {
+					kpState->operation_mode = false;
+				} else if (debounce_counter >= 30 && last_char == '*') {
+
+				} else if (debounce_counter >= 5) {
+					updateKeypadState(kpState, last_char);
+				}
+				debounce_down_counter = 5;
+				last_char = '\0';
+				debounce_counter = 0;
+			}
+	}
+}

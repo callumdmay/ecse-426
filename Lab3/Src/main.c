@@ -64,10 +64,9 @@ int main(void)
 	//SysTickCount runs at 1000Hz
 
 		if (SysTickCount % 50 == 0) {
-			process_switch(&kpState);
+			processKeypadInput(&kpState);
 			printf("buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
 			printf("Roll %d\n", kpState.roll_angle);
-			printf("Pitch %d\n", kpState.pitch_angle);
 			printf("Pitch %d\n", kpState.pitch_angle);
 			printf("Operation %d\n", kpState.operation_mode);
 			printf("\n");
@@ -78,47 +77,13 @@ int main(void)
 			// printACC();
 			char keypad_val = scanKeypad();
 			if (keypad_val != '\0') {
-				// printf("Key: %c\n", keypad_val);
+				 printf("Key: %c\n", keypad_val);
 			}
 				// printf("\n");
 		}
 
 		SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;
   }
-}
-
-
-void process_switch(struct keypadState *kpState) {
-	static int debounce_counter = 0;
-	static int debounce_down_counter = 5;
-	static char last_char = '\0';
-
-	char keypad_char = scanKeypad();
-	if (keypad_char != '\0') {
-		if (last_char == '\0') {
-			debounce_counter = 0;
-		}
-		last_char = keypad_char;
-
-		debounce_counter++;
-		} else {
-			if (debounce_counter > 5 && debounce_down_counter > 0) {
-				debounce_down_counter--;
-			} else {
-				if (debounce_counter >= 60 && last_char == '#') {
-					kpState->operation_mode = true;
-				} else if (debounce_counter >= 60 && last_char == '*') {
-					kpState->operation_mode = false;
-				} else if (debounce_counter >= 30 && last_char == '*') {
-
-				} else if (debounce_counter >= 5) {
-					updateKeypadState(kpState, last_char);
-				}
-				debounce_down_counter = 5;
-				last_char = '\0';
-				debounce_counter = 0;
-			}
-	}
 }
 
 #ifdef USE_FULL_ASSERT

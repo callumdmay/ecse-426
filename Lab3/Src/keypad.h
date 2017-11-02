@@ -14,5 +14,6 @@ char scanKeypad(void);
 
 void initKeypadState(struct keypadState *state);
 void updateKeypadState(struct keypadState *state, char val);
+void processKeypadInput(struct keypadState *kpState);
 
 #endif
