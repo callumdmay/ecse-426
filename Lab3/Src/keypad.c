@@ -4,12 +4,12 @@
 
 GPIO_InitTypeDef GPIO_InitDef_Row;
 GPIO_InitTypeDef GPIO_InitDef_Col;
-
 void initKeypadState(struct keypadState *state) {
 	state->roll_angle = -1;
 	state->pitch_angle = -1;
 	state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
 	state->operation_mode = false;
+	state->disp_state = ROLL;
 }
 
 //Initialize GPIO pins
@@ -141,10 +141,20 @@ void updateKeypadState(struct keypadState *state, char val) {
 			state->operation_mode = true;
 			break;
 		default:
-			for (i = 0; i < length; i++) {
-				if (state->num_buffer[i] == '\0') {
-					state->num_buffer[i] = val;
-					return;
+			if(state->operation_mode == true) {
+				if (val == '1') {
+					state->disp_state = PITCH;
+				}
+
+				if (val == '2') {
+					state->disp_state = ROLL;
+				}
+			} else {
+				for (i = 0; i < length; i++) {
+					if (state->num_buffer[i] == '\0') {
+						state->num_buffer[i] = val;
+						return;
+					}
 				}
 			}
 			break;

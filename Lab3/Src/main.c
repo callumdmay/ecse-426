@@ -69,6 +69,7 @@ int main(void)
 			printf("Roll %d\n", kpState.roll_angle);
 			printf("Pitch %d\n", kpState.pitch_angle);
 			printf("Operation %d\n", kpState.operation_mode);
+			printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
 			printf("\n");
 		}
 
