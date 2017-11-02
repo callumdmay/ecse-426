@@ -5,26 +5,34 @@
 GPIO_InitTypeDef GPIO_InitDef_Row;
 GPIO_InitTypeDef GPIO_InitDef_Col;
 
+void initKeypadState(struct keypadState *state) {
+	state->roll_angle = -1;
+	state->pitch_angle = -1;
+	state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
+	state->operation_mode = false;
+}
+
 //Initialize GPIO pins
 void initKeypad(void) {
 	__HAL_RCC_GPIOE_CLK_ENABLE();
-	
+
 	//Using E7 - E13
 	GPIO_InitDef_Row.Pin = GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10;
 	GPIO_InitDef_Row.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitDef_Row.Pull = GPIO_PULLDOWN;
 	GPIO_InitDef_Row.Speed = GPIO_SPEED_HIGH;
-	
+
 	GPIO_InitDef_Col.Pin = GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13;
 	GPIO_InitDef_Col.Mode = GPIO_MODE_INPUT;
 	GPIO_InitDef_Col.Pull = GPIO_PULLDOWN;
 	GPIO_InitDef_Col.Speed = GPIO_SPEED_HIGH;
-	
-	//init the structures 
+
+	//init the structures
 	HAL_GPIO_Init(GPIOE, &GPIO_InitDef_Row);
 	HAL_GPIO_Init(GPIOE, &GPIO_InitDef_Col);
 }
 
+//Scan keypad for value
 char scanKeypad(void) {
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
@@ -39,7 +47,7 @@ char scanKeypad(void) {
 	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13) == 1) {
 		return '3';
 	}
-	
+
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
@@ -53,7 +61,7 @@ char scanKeypad(void) {
 	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13) == 1) {
 		return '6';
 	}
-	
+
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);
@@ -67,7 +75,7 @@ char scanKeypad(void) {
 	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13) == 1) {
 		return '9';
 	}
-	
+
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
@@ -81,6 +89,57 @@ char scanKeypad(void) {
 	else if (HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_13) == 1) {
 		return '#';
 	}
-	
+
 	return '\0';
+}
+
+//Update keypad state
+void updateKeypadState(struct keypadState *state, char val) {
+	int i;
+	int length = sizeof(state->num_buffer)/sizeof(char);
+	bool has_buffer = false;
+
+	switch (val) {
+		case '*':
+			for (i = 2; i >= 0; i--) {
+				if (state->num_buffer[i] != '\0') {
+					state->num_buffer[i] = '\0';
+					return;
+				}
+			}
+			break;
+		case '7':
+			for (i = 0; i < length; i++) {
+				if (state->num_buffer[i] != '\0') {
+					has_buffer = true;
+				}
+			}
+
+			if (!has_buffer) {
+				return;
+			}
+
+			if (state->roll_angle == -1) {
+				sscanf(state->num_buffer, "%d", &(state->roll_angle));
+				state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
+				return;
+			}
+
+			if (state->pitch_angle == -1) {
+				sscanf(state->num_buffer, "%d", &(state->pitch_angle));
+				state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
+			}
+
+			state->operation_mode = true;
+
+			break;
+		default:
+			for (i = 0; i < length; i++) {
+				if (state->num_buffer[i] == '\0') {
+					state->num_buffer[i] = val;
+					return;
+				}
+			}
+			break;
+	}
 }

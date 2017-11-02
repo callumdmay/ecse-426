@@ -33,19 +33,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
-#include "keypad.h"
 #include "clock.h"
 #include "accelerometer.h"
+#include "stdbool.h"
+#include "main.h"
 
 /* Private variables ---------------------------------------------------------*/
-
-
-/* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-void initializeACC			(void);
 int SysTickCount;
-
-
+struct keypadState kpState;
 
 int main(void)
 {
@@ -59,28 +54,71 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-	
+
 	initKeypad();
-  
+
+	initKeypadState(&kpState);
+
 	while (1)
   {
 	//SysTickCount runs at 1000Hz
-	/* this is just an example of reading the Accelerometer data in polling technique. You are
-		required to read value in interrupt mode automatically, without requestin for a new data every time.
-		In fact, the Accl IC will generate data at a certain rate that you have to configure it.
-	*/
-	// an example of pulse division.
-		if (SysTickCount % 100 == 0) 
-		{			
-				printACC();
-				if (scanKeypad() != '\0'){
-					printf("Key: %c\n", scanKeypad());
-				}
-				printf("\n");
+
+		if (SysTickCount % 50 == 0) {
+			process_switch(&kpState);
+			printf("buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
+			printf("Roll %d\n", kpState.roll_angle);
+			printf("Pitch %d\n", kpState.pitch_angle);
+			printf("Pitch %d\n", kpState.pitch_angle);
+			printf("Operation %d\n", kpState.operation_mode);
+			printf("\n");
 		}
-		
-		SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;	
+
+		if (SysTickCount % 100 == 0) {
+
+			// printACC();
+			char keypad_val = scanKeypad();
+			if (keypad_val != '\0') {
+				// printf("Key: %c\n", keypad_val);
+			}
+				// printf("\n");
+		}
+
+		SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;
   }
+}
+
+
+void process_switch(struct keypadState *kpState) {
+	static int debounce_counter = 0;
+	static int debounce_down_counter = 5;
+	static char last_char = '\0';
+
+	char keypad_char = scanKeypad();
+	if (keypad_char != '\0') {
+		if (last_char == '\0') {
+			debounce_counter = 0;
+		}
+		last_char = keypad_char;
+
+		debounce_counter++;
+		} else {
+			if (debounce_counter > 5 && debounce_down_counter > 0) {
+				debounce_down_counter--;
+			} else {
+				if (debounce_counter >= 60 && last_char == '#') {
+					kpState->operation_mode = true;
+				} else if (debounce_counter >= 60 && last_char == '*') {
+					kpState->operation_mode = false;
+				} else if (debounce_counter >= 30 && last_char == '*') {
+
+				} else if (debounce_counter >= 5) {
+					updateKeypadState(kpState, last_char);
+				}
+				debounce_down_counter = 5;
+				last_char = '\0';
+				debounce_counter = 0;
+			}
+	}
 }
 
 #ifdef USE_FULL_ASSERT
