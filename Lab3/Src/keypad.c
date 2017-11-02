@@ -120,18 +120,25 @@ void updateKeypadState(struct keypadState *state, char val) {
 			}
 
 			if (state->roll_angle == -1) {
-				sscanf(state->num_buffer, "%d", &(state->roll_angle));
-				state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
+				int buf_val;
+				sscanf(state->num_buffer, "%d", &buf_val);
+				if (buf_val >=0 && buf_val <= 180) {
+					state->roll_angle = buf_val;
+					state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
+				}
 				return;
 			}
 
 			if (state->pitch_angle == -1) {
-				sscanf(state->num_buffer, "%d", &(state->pitch_angle));
-				state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
+				int buf_val;
+				sscanf(state->num_buffer, "%d", &buf_val);
+				if (buf_val >=0 && buf_val <= 180) {
+					state->pitch_angle = buf_val;
+					state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
+				}
 			}
 
 			state->operation_mode = true;
-
 			break;
 		default:
 			for (i = 0; i < length; i++) {
@@ -144,7 +151,7 @@ void updateKeypadState(struct keypadState *state, char val) {
 	}
 }
 
-void processKeypadInput(struct keypadState *kpState) {
+void processKeypadInput(struct keypadState *state) {
 	static int debounce_counter = 0;
 	static int debounce_down_counter = 5;
 	static char last_char = '\0';
@@ -161,14 +168,17 @@ void processKeypadInput(struct keypadState *kpState) {
 			if (debounce_counter > 5 && debounce_down_counter > 0) {
 				debounce_down_counter--;
 			} else {
+				printf("debounce counter: %d\n", debounce_counter);
 				if (debounce_counter >= 60 && last_char == '#') {
-					kpState->operation_mode = true;
+					state->operation_mode = true;
 				} else if (debounce_counter >= 60 && last_char == '*') {
-					kpState->operation_mode = false;
+					state->operation_mode = false;
 				} else if (debounce_counter >= 30 && last_char == '*') {
-
+					if (state->operation_mode ==  true) {
+						initKeypadState(state);
+					}
 				} else if (debounce_counter >= 5) {
-					updateKeypadState(kpState, last_char);
+					updateKeypadState(state, last_char);
 				}
 				debounce_down_counter = 5;
 				last_char = '\0';

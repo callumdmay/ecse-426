@@ -73,7 +73,6 @@ int main(void)
 		}
 
 		if (SysTickCount % 100 == 0) {
-
 			// printACC();
 			char keypad_val = scanKeypad();
 			if (keypad_val != '\0') {
