@@ -2,5 +2,6 @@
 #define ACCELEROMETER
 
 void initializeACC(void);
-void printACC(void);
+void getACC(float *arr);
+
 #endif

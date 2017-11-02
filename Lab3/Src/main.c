@@ -72,14 +72,19 @@ int main(void)
 			printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
 			printf("\n");
 		}
-
+		
+		//printing
 		if (SysTickCount % 100 == 0) {
-			// printACC();
+			float buffer[3] = {-1, -1, -1};
+			getACC(buffer);
+			if(buffer[0] != -1) {
+				printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", buffer[0], buffer[1], buffer[2] , (int)(buffer[0]));
+			}
+			
 			char keypad_val = scanKeypad();
 			if (keypad_val != '\0') {
 				 printf("Key: %c\n", keypad_val);
 			}
-				// printf("\n");
 		}
 
 		SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;
