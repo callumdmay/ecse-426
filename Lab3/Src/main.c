@@ -65,13 +65,10 @@ int main(void)
 	while (1)
   {
 	//SysTickCount runs at 1000Hz
-		if(SysTickCount % 10 == 0) {
-			if (kpState.operation_mode == true) {
-				updateSegmentDisplay("9999");
-			} else {
-				updateSegmentDisplay(kpState.num_buffer);
-				//updateSegmentDisplay("1");
-			}
+		if (kpState.operation_mode == true) {
+			updateSegmentDisplay("9999");
+		} else {
+			updateSegmentDisplay(kpState.num_buffer);
 		}
 
 		if (SysTickCount % 50 == 0) {

@@ -33,15 +33,13 @@ void initSegmentDisplay(void) {
 }
 
 void updateSegmentDisplay(char *num_buffer) {
-  static int digit_index = 0;
-  int length = sizeof(num_buffer)/ sizeof(num_buffer[0]);
-  int i;
-  if (num_buffer[digit_index] != '\0') {
+  static int i = 0;
+  if (num_buffer[i] != '\0') {
     updateDigit(i, num_buffer[i] - '0');
-    digit_index++;
   } else {
-    digit_index = 0;
+    updateDigit(i, -1);
   }
+   i = i == 3 ? 0 : ++i;
 }
 
 static void updateDigit(int digit, int value) {
@@ -73,6 +71,11 @@ static void updateDigit(int digit, int value) {
 }
 
 static void updateSegments(int value) {
+    if(value == -1) {
+      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13, GPIO_PIN_RESET);
+      return;
+    }
     if ((value != 1) && (value != 4)) {
       HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8, GPIO_PIN_SET);
     } else {
