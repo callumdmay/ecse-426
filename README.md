@@ -7,9 +7,9 @@ Digit selectors (MOSFET base) on 7 segment display are D0 - D3
 
 Segment selectors on 7 segment display are
 * D8 - D11: A, B, C, D
- *  Pins 14, 16, 13, 3
+   *  Pins 14, 16, 13, 3
 * B11 - B14: E, F, G, DP
- *  Pins 5, 11, 15, 7
+   *  Pins 5, 11, 15, 7
 
 
 
