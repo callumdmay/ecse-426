@@ -31,11 +31,12 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
+#include "stdbool.h"
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
 #include "clock.h"
 #include "accelerometer.h"
-#include "stdbool.h"
+#include "segment_display.h"
 #include "main.h"
 
 /* Private variables ---------------------------------------------------------*/
@@ -59,9 +60,19 @@ int main(void)
 
 	initKeypadState(&kpState);
 
+	initSegmentDisplay();
+
 	while (1)
   {
 	//SysTickCount runs at 1000Hz
+		if(SysTickCount % 10 == 0) {
+			if (kpState.operation_mode == true) {
+				updateSegmentDisplay("9999");
+			} else {
+				updateSegmentDisplay(kpState.num_buffer);
+				//updateSegmentDisplay("1");
+			}
+		}
 
 		if (SysTickCount % 50 == 0) {
 			processKeypadInput(&kpState);
@@ -72,7 +83,7 @@ int main(void)
 			printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
 			printf("\n");
 		}
-		
+
 		//printing
 		if (SysTickCount % 100 == 0) {
 			float buffer[3] = {-1, -1, -1};
@@ -80,7 +91,7 @@ int main(void)
 			if(buffer[0] != -1) {
 				printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", buffer[0], buffer[1], buffer[2] , (int)(buffer[0]));
 			}
-			
+
 			char keypad_val = scanKeypad();
 			if (keypad_val != '\0') {
 				 printf("Key: %c\n", keypad_val);

@@ -518,6 +518,16 @@
               <FileType>5</FileType>
               <FilePath>..\Src\main.h</FilePath>
             </File>
+            <File>
+              <FileName>segment_display.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\segment_display.c</FilePath>
+            </File>
+            <File>
+              <FileName>segment_display.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Src\segment_display.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
