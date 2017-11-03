@@ -44,29 +44,29 @@ void updateSegmentDisplay(char *num_buffer) {
 
 static void updateDigit(int digit, int value) {
   switch (digit) {
-  case 0:
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET); //digit 4 off
-    updateSegments(value);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET); //digit 1 on
-    break;
+    case 0:
+      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET); //digit 4 off
+      updateSegments(value);
+      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET); //digit 1 on
+      break;
 
-  case 1:
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_RESET); //digit 1 off
-    updateSegments(value);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET); //digit 2 on
-    break;
+    case 1:
+      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_RESET); //digit 1 off
+      updateSegments(value);
+      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET); //digit 2 on
+      break;
 
-  case 2:
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET); //digit 2 off
-    updateSegments(value);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET); //digit 3 on
-    break;
+    case 2:
+      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET); //digit 2 off
+      updateSegments(value);
+      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET); //digit 3 on
+      break;
 
-  case 3:
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET); //digit 3 off
-    updateSegments(value);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET); //digit 4 on
-    break;
+    case 3:
+      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET); //digit 3 off
+      updateSegments(value);
+      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET); //digit 4 on
+      break;
   }
 }
 

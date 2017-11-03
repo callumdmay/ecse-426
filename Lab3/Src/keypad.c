@@ -4,6 +4,7 @@
 
 GPIO_InitTypeDef GPIO_InitDef_Row;
 GPIO_InitTypeDef GPIO_InitDef_Col;
+
 void initKeypadState(struct keypadState *state) {
 	state->roll_angle = -1;
 	state->pitch_angle = -1;
@@ -155,7 +156,7 @@ void updateKeypadState(struct keypadState *state, char val) {
 
 void processKeypadInput(struct keypadState *state) {
 	static int debounce_counter = 0;
-	static int debounce_down_counter = 5;
+	static int debounce_down_counter = DEBOUNCE_THRESHOLD;
 	static char last_char = '\0';
 
 	char keypad_char = scanKeypad();
@@ -167,7 +168,7 @@ void processKeypadInput(struct keypadState *state) {
 
 		debounce_counter++;
 		} else {
-			if (debounce_counter > 5 && debounce_down_counter > 0) {
+			if (debounce_counter > DEBOUNCE_THRESHOLD && debounce_down_counter > 0) {
 				debounce_down_counter--;
 			} else {
 				printf("debounce counter: %d\n", debounce_counter);
@@ -179,10 +180,10 @@ void processKeypadInput(struct keypadState *state) {
 					if (state->operation_mode ==  true) {
 						initKeypadState(state);
 					}
-				} else if (debounce_counter >= 5) {
+				} else if (debounce_counter >= DEBOUNCE_THRESHOLD) {
 					updateKeypadState(state, last_char);
 				}
-				debounce_down_counter = 5;
+				debounce_down_counter = DEBOUNCE_THRESHOLD;
 				last_char = '\0';
 				debounce_counter = 0;
 			}

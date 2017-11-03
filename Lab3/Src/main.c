@@ -65,13 +65,15 @@ int main(void)
 	while (1)
   {
 	//SysTickCount runs at 1000Hz
-		if (kpState.operation_mode == true) {
-			updateSegmentDisplay("9999");
-		} else {
-			updateSegmentDisplay(kpState.num_buffer);
+		if(SysTickCount % 4 == 0) {
+			if (kpState.operation_mode == true) {
+				updateSegmentDisplay("9999");
+			} else {
+				updateSegmentDisplay(kpState.num_buffer);
+			}
 		}
 
-		if (SysTickCount % 50 == 0) {
+		if (SysTickCount % 30 == 0) {
 			processKeypadInput(&kpState);
 			printf("buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
 			printf("Roll %d\n", kpState.roll_angle);

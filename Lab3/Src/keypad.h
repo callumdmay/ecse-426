@@ -12,6 +12,7 @@ struct keypadState {
 	enum display_state disp_state;
 };
 
+#define DEBOUNCE_THRESHOLD 5
 void initKeypad(void);
 char scanKeypad(void);
 
