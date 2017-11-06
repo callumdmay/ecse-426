@@ -1,6 +1,6 @@
 # ECSE-426 Labs
 
-## Mappings
+### Mappings
 
 Digit selectors (MOSFET base) on 7 segment display are D0 - D3
   * Pins are 1, 2, 6, 8
@@ -13,4 +13,5 @@ Segment selectors on 7 segment display are
 
 
 
-Pins 1-7 on keypad are E7 - E13 with rows 7-10 and columns 11-13
+Pins 1-7 on keypad are E7 - E13 with rows E7- E10 and columns E11 - E13
+* Pin addressing on keypad starts at pin 1 not pin 0
