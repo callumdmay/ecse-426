@@ -101,7 +101,7 @@ void updateKeypadState(struct keypadState *state, char val) {
 				}
 			}
 			break;
-		case '7':
+		case '#':
 			for (i = 0; i < length; i++) {
 				if (state->num_buffer[i] != '\0') {
 					has_buffer = true;

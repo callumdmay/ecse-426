@@ -40,22 +40,23 @@
 #include "main.h"
 #include "LED.h"
 #include "tim.h"
+#include "string.h"
 
 /* Private variables ---------------------------------------------------------*/
 int SysTickCount;
-float buffer[3];
+float char_input_buffer[3];
 int diff[2];
 int inputs[2];
-float conv[2];
+float axisAngles[2];
 uint8_t updateFlag;
 
 struct keypadState kpState;
 
 int main(void)
- {	
-	updateFlag=0;
-	initializeACC();
-	
+ {
+  updateFlag=0;
+  initializeACC();
+
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
@@ -65,71 +66,86 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-	MX_TIM4_Init();
-	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
-	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
-	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
-	ITInit();
-	
-	initKeypad();
+  MX_TIM4_Init();
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
+  ITInit();
 
-	initKeypadState(&kpState);
+  initKeypad();
 
-	initSegmentDisplay();
+  initKeypadState(&kpState);
 
-	while (1)
+  initSegmentDisplay();
+  int counter = 0;
+  while (1)
   {
-	//SysTickCount runs at 1000Hz
-		if(SysTickCount % 4 == 0) {
-			if (kpState.operation_mode == true) {
-				updateSegmentDisplay("9999");
-			} else {
-				updateSegmentDisplay(kpState.num_buffer);
-			}
-		}
 
-		if (SysTickCount % 30 == 0) {
-			processKeypadInput(&kpState);
-		/*	printf("buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
-			printf("Roll %d\n", kpState.roll_angle);
-			printf("Pitch %d\n", kpState.pitch_angle);
-			printf("Operation %d\n", kpState.operation_mode);
-			printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
-			printf("\n"); */
-		}
-		
-		if (updateFlag==1 && kpState.operation_mode==true)
-		{
+  //SysTickCount runs at 1000Hz
+    counter++;
 
-			conversion(buffer, conv);
-			printf("xxxxxxxxxxxxxxxxxxxxxx:   %f\n", conv[0]);
-			printf("yyyyyyyyyyyyyyyyyyyyyy:   %f\n", conv[1]);
-		  comparison(conv, inputs, diff);
-			LEDSet(diff);
-			updateFlag=0;
-		}
+    if(counter % 50 == 0) {
+      if (kpState.operation_mode == true) {
+        char angle[3]= {'\0', '\0', '\0'};
+        if (kpState.disp_state == ROLL) {
+          int roll = (int)axisAngles[0];
+          printf(" %d 		%f\n", roll, axisAngles[0]);
+          sprintf(angle, "%d", roll);
+          updateSegmentDisplay(angle);
+        } else if (kpState.disp_state == PITCH) {
+          int pitch = (int)axisAngles[1];
+          sprintf(angle, "%d", pitch);
+          updateSegmentDisplay(angle);
+        }
+      } else {
+        updateSegmentDisplay(kpState.num_buffer);
+      }
+    }
 
-		//printing
-		if (SysTickCount % 100 == 0) {
-			if(buffer[0] != -1) {
-				printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", buffer[0], buffer[1], buffer[2] , (int)(buffer[0]));
-			}
+    if (SysTickCount % 30 == 0) {
+      processKeypadInput(&kpState);
+      printf("char_input_buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
+      printf("Roll %d\n", kpState.roll_angle);
+      printf("Pitch %d\n", kpState.pitch_angle);
+      printf("Operation %d\n", kpState.operation_mode);
+      printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
+      printf("\n");
+    }
 
-			char keypad_val = scanKeypad();
-			if (keypad_val != '\0') {
-				 printf("Key: %c\n", keypad_val);
-			}
-		}
+    if (updateFlag==1 && kpState.operation_mode==true)
+    {
 
-		SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;
+      conversion(char_input_buffer, axisAngles);
+    /*	printf("xxxxxxxxxxxxxxxxxxxxxx:   %f\n", axisAngles[0]);
+      printf("yyyyyyyyyyyyyyyyyyyyyy:   %f\n", axisAngles[1]); */
+      comparison(axisAngles, inputs, diff);
+      LEDSet(diff);
+      updateFlag=0;
+    }
+
+    //printing
+    if (SysTickCount % 100 == 0) {
+      if(char_input_buffer[0] != -1) {
+      //	printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", char_input_buffer[0], char_input_buffer[1], char_input_buffer[2] , (int)(char_input_buffer[0]));
+      }
+
+      char keypad_val = scanKeypad();
+      if (keypad_val != '\0') {
+        // printf("Key: %c\n", keypad_val);
+      }
+    }
+
+    SysTickCount = SysTickCount == 100 ? 0 : SysTickCount;
+    counter = counter == 100 ? 0 : counter;
+
   }
 }
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	getACC(buffer);
-	updateFlag=1;
-	
+  getACC(char_input_buffer);
+  updateFlag=1;
+
 }
 
 #ifdef USE_FULL_ASSERT

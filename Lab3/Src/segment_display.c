@@ -7,7 +7,7 @@ static void updateSegments(int value);
 void initSegmentDisplay(void) {
 
   //Display segments
-	GPIO_InitTypeDef GPIO_InitDef1;
+  GPIO_InitTypeDef GPIO_InitDef1;
   GPIO_InitDef1.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11;
   GPIO_InitDef1.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitDef1.Pull = GPIO_NOPULL;
@@ -43,28 +43,20 @@ void updateSegmentDisplay(char *num_buffer) {
 }
 
 static void updateDigit(int digit, int value) {
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET); //All digits off
+  updateSegments(value);
+
   switch (digit) {
     case 0:
-      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET); //digit 4 off
-      updateSegments(value);
       HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_SET); //digit 1 on
       break;
-
     case 1:
-      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, GPIO_PIN_RESET); //digit 1 off
-      updateSegments(value);
       HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_SET); //digit 2 on
       break;
-
     case 2:
-      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, GPIO_PIN_RESET); //digit 2 off
-      updateSegments(value);
       HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_SET); //digit 3 on
       break;
-
     case 3:
-      HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET); //digit 3 off
-      updateSegments(value);
       HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_SET); //digit 4 on
       break;
   }
