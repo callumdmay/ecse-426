@@ -1,25 +1,51 @@
 #include "lis3dsh.h"
 #include "stm32f4xx_hal.h"
+#include "keypad.h"
 #include "gpio.h"
+#include <math.h>
+#include <stdlib.h>
 
 LIS3DSH_InitTypeDef 		Acc_instance;
-
-
+LIS3DSH_DRYInterruptConfigTypeDef AccIT;
+GPIO_InitTypeDef GPIO_InitStruct;
+SPI_HandleTypeDef hspi;
 void initializeACC(void){
 
 	Acc_instance.Axes_Enable				= LIS3DSH_XYZ_ENABLE;
 	Acc_instance.AA_Filter_BW				= LIS3DSH_AA_BW_50;
 	Acc_instance.Full_Scale					= LIS3DSH_FULLSCALE_2;
-	Acc_instance.Power_Mode_Output_DataRate		= LIS3DSH_DATARATE_25;
+	Acc_instance.Power_Mode_Output_DataRate		= LIS3DSH_DATARATE_50	;
 	Acc_instance.Self_Test					= LIS3DSH_SELFTEST_NORMAL;
 	Acc_instance.Continous_Update   = LIS3DSH_ContinousUpdate_Enabled;
-
 	LIS3DSH_Init(&Acc_instance);
+	
+	
 
 	/* Enabling interrupt conflicts with push button. Be careful when you plan to
 	use the interrupt of the accelerometer sensor connceted to PIN A.0
 	*/
 }
+
+void ITInit(void){
+	
+	AccIT.Dataready_Interrupt = LIS3DSH_DATA_READY_INTERRUPT_ENABLED; 
+	AccIT.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
+	AccIT.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_PULSED;
+	
+	LIS3DSH_DataReadyInterruptConfig(&AccIT);
+	
+	GPIO_InitStruct.Pin = GPIO_PIN_0;
+	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+	
+	HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 1);
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	
+	
+}
+
 
 float* getACC(float *arr) {
 	uint8_t status;
@@ -35,4 +61,22 @@ float* getACC(float *arr) {
 	}
 
 	return arr;
+}
+
+void conversion(float acc[3], float conv[2])
+{
+	conv[0] = atan(acc[0]/(sqrtf(powf(acc[1], 2)*powf(acc[2], 2))));
+	conv[1] = atan(acc[1]/(sqrtf(powf(acc[0], 2)*powf(acc[2], 2))));
+	if (conv[0] < 0)
+		conv[0]=360+conv[0];
+	if (conv[1] < 0)
+		conv[1]=360+conv[1];
+}
+
+void comparison (float actual[2], int input[2], int diff[2])
+{
+	
+	diff[0] = abs(input[0]-(int)actual[0]);
+	diff[1] = abs(input[1]-(int)actual[1]);
+	
 }

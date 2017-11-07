@@ -38,14 +38,24 @@
 #include "accelerometer.h"
 #include "segment_display.h"
 #include "main.h"
+#include "LED.h"
+#include "tim.h"
 
 /* Private variables ---------------------------------------------------------*/
 int SysTickCount;
+float buffer[3];
+int diff[2];
+int inputs[2];
+float conv[2];
+uint8_t updateFlag;
+
 struct keypadState kpState;
 
 int main(void)
-{
+ {	
+	updateFlag=0;
 	initializeACC();
+	
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
@@ -55,7 +65,13 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-
+	MX_TIM4_Init();
+	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
+	ITInit();
+	
 	initKeypad();
 
 	initKeypadState(&kpState);
@@ -75,18 +91,27 @@ int main(void)
 
 		if (SysTickCount % 30 == 0) {
 			processKeypadInput(&kpState);
-			printf("buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
+		/*	printf("buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
 			printf("Roll %d\n", kpState.roll_angle);
 			printf("Pitch %d\n", kpState.pitch_angle);
 			printf("Operation %d\n", kpState.operation_mode);
 			printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
-			printf("\n");
+			printf("\n"); */
+		}
+		
+		if (updateFlag==1 && kpState.operation_mode==true)
+		{
+
+			conversion(buffer, conv);
+			printf("xxxxxxxxxxxxxxxxxxxxxx:   %f\n", conv[0]);
+			printf("yyyyyyyyyyyyyyyyyyyyyy:   %f\n", conv[1]);
+		  comparison(conv, inputs, diff);
+			LEDSet(diff);
+			updateFlag=0;
 		}
 
 		//printing
 		if (SysTickCount % 100 == 0) {
-			float buffer[3] = {-1, -1, -1};
-			getACC(buffer);
 			if(buffer[0] != -1) {
 				printf("X: %3f   Y: %3f   Z: %3f  absX: %d\n", buffer[0], buffer[1], buffer[2] , (int)(buffer[0]));
 			}
@@ -99,6 +124,12 @@ int main(void)
 
 		SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;
   }
+}
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	getACC(buffer);
+	updateFlag=1;
+	
 }
 
 #ifdef USE_FULL_ASSERT
