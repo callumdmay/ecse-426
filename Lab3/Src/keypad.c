@@ -171,7 +171,6 @@ void processKeypadInput(struct keypadState *state) {
 			if (debounce_counter > DEBOUNCE_THRESHOLD && debounce_down_counter > 0) {
 				debounce_down_counter--;
 			} else {
-				printf("debounce counter: %d\n", debounce_counter);
 				if (debounce_counter >= 60 && last_char == '#') {
 					state->operation_mode = true;
 				} else if (debounce_counter >= 60 && last_char == '*') {

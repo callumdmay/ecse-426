@@ -14,7 +14,7 @@ void initializeACC(void){
   Acc_instance.Axes_Enable				= LIS3DSH_XYZ_ENABLE;
   Acc_instance.AA_Filter_BW				= LIS3DSH_AA_BW_50;
   Acc_instance.Full_Scale					= LIS3DSH_FULLSCALE_2;
-  Acc_instance.Power_Mode_Output_DataRate		= LIS3DSH_DATARATE_50	;
+  Acc_instance.Power_Mode_Output_DataRate		= LIS3DSH_DATARATE_100;
   Acc_instance.Self_Test					= LIS3DSH_SELFTEST_NORMAL;
   Acc_instance.Continous_Update   = LIS3DSH_ContinousUpdate_Enabled;
   LIS3DSH_Init(&Acc_instance);
@@ -63,16 +63,24 @@ float* getACC(float *arr) {
   return arr;
 }
 
+//acc contains [x, y, z], conv is output
 void conversion(float acc[3], float conv[2]) {
-  conv[0] = atan(acc[0]/(sqrtf(powf(acc[1], 2)*powf(acc[2], 2))));
-  conv[1] = atan(acc[1]/(sqrtf(powf(acc[0], 2)*powf(acc[2], 2))));
+	//Pitch
+  conv[0] = atan(acc[0]/(sqrtf(powf(acc[1], 2) + powf(acc[2], 2))));
+	//Roll
+  conv[1] = atan(acc[1]/(sqrtf(powf(acc[0], 2) + powf(acc[2], 2))));
+	
+	float PI = 3.141592654;
+	conv[0] *= 180/PI;
+	conv[1] *= 180/PI;
+	
   if (conv[0] < 0)
     conv[0]=360+conv[0];
   if (conv[1] < 0)
     conv[1]=360+conv[1];
 }
 
-void comparison (float actual[2], int roll, int pitch, int diff[2]) {
-  diff[0] = abs(roll - (int)actual[0]);
-  diff[1] = abs(pitch - (int)actual[1]);
+void comparison (float actual[2], int pitch, int roll, int diff[2]) {
+  diff[0] = abs(pitch - (int)actual[0]);
+  diff[1] = abs(roll - (int)actual[1]);
 }

@@ -44,7 +44,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 int SysTickCount;
-float char_input_buffer[3];
+float acc_output_values[3];
 int angle_difference[2];
 int inputs[2];
 float axis_angles[2];
@@ -52,8 +52,7 @@ uint8_t updateFlag;
 
 struct keypadState kpState;
 
-int main(void)
- {
+int main(void) {
   updateFlag=0;
   initializeACC();
 
@@ -78,8 +77,8 @@ int main(void)
 
   initSegmentDisplay();
   int display_counter = 0;
-  while (1) {
-    //SysTickCount runs at 1000Hz
+  
+	while (1) {
     display_counter++;
 
     if(display_counter % 50 == 0) {
@@ -101,17 +100,22 @@ int main(void)
 
     if (SysTickCount % 30 == 0) {
       processKeypadInput(&kpState);
-      printf("Buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
-      printf("Roll %d\n", kpState.roll_angle);
-      printf("Pitch %d\n", kpState.pitch_angle);
-      printf("Operation %d\n", kpState.operation_mode);
-      printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
-      printf("\n");
+			
+			if (kpState.operation_mode == false) {
+				printf("Buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
+				printf("Roll %d\n", kpState.roll_angle);
+				printf("Pitch %d\n", kpState.pitch_angle);
+				printf("Operation %d\n", kpState.operation_mode);
+				printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
+				printf("\n");
+			}
     }
 
     if (updateFlag == 1 && kpState.operation_mode == true) {
-      conversion(char_input_buffer, axis_angles);
-      comparison(axis_angles, kpState.roll_angle, kpState.pitch_angle, angle_difference);
+      conversion(acc_output_values, axis_angles);
+			printf("acc values: %f %f %f\n", acc_output_values[0], acc_output_values[1], acc_output_values[2]);
+			printf("axis values:  PITCH: %f   ROLL: %f\n", axis_angles[0], axis_angles[1]);
+      comparison(axis_angles, kpState.pitch_angle, kpState.roll_angle,  angle_difference);
       LEDSet(angle_difference);
       updateFlag=0;
     }
@@ -123,9 +127,8 @@ int main(void)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  getACC(char_input_buffer);
+  getACC(acc_output_values);
   updateFlag=1;
-
 }
 
 #ifdef USE_FULL_ASSERT
