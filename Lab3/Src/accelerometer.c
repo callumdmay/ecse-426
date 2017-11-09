@@ -9,6 +9,12 @@ LIS3DSH_InitTypeDef 		Acc_instance;
 LIS3DSH_DRYInterruptConfigTypeDef AccIT;
 GPIO_InitTypeDef GPIO_InitStruct;
 SPI_HandleTypeDef hspi;
+
+double ACC_CALIBRATION_MATRIX[4][3] = {
+														{0.000975570176,-0.0000179726958, 0.0000118904418},
+														{-0.00000826743781, 0.00100064254, -0.00000108576944},
+														{0.00000101638125, 0.00000478541733, 0.000963788305},
+														{-0.00438112020, -0.000916585326, 0.000590100884}};
 void initializeACC(void){
 
   Acc_instance.Axes_Enable				= LIS3DSH_XYZ_ENABLE;
@@ -18,7 +24,6 @@ void initializeACC(void){
   Acc_instance.Self_Test					= LIS3DSH_SELFTEST_NORMAL;
   Acc_instance.Continous_Update   = LIS3DSH_ContinousUpdate_Enabled;
   LIS3DSH_Init(&Acc_instance);
-
 
 
   /* Enabling interrupt conflicts with push button. Be careful when you plan to
@@ -55,11 +60,11 @@ float* getACC(float *arr) {
   //Z axis only, Y axis only or Z axis only. If any or all changed, proceed
   if ((status & 0x0F) != 0x00) {
     LIS3DSH_ReadACC(&buffer[0]);
-    arr[0] = (float)buffer[0]; //X
+		
+		arr[0] = (float)buffer[0]; //X
     arr[1] = (float)buffer[1]; //Y
     arr[2] = (float)buffer[2]; //Z
   }
-
   return arr;
 }
 
@@ -83,4 +88,17 @@ void conversion(float acc[3], float conv[2]) {
 void comparison (float actual[2], int pitch, int roll, int diff[2]) {
   diff[0] = abs(pitch - (int)actual[0]);
   diff[1] = abs(roll - (int)actual[1]);
+}
+
+void getNormalizedAcc(float acc[3], float output[3]) {
+		output[0] = output[1] = output[2] = 0;
+		int i, j;
+		for (j=0; j < 3; j++)
+			for(i=0; i < 4; i++) {
+				if (i < 3) {
+					output[j] += acc[i] * (float)ACC_CALIBRATION_MATRIX[i][j];
+				} else {
+					output[j] += (float)ACC_CALIBRATION_MATRIX[i][j];
+				}
+			}
 }

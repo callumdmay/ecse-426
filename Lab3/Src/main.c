@@ -81,7 +81,7 @@ int main(void) {
 	while (1) {
     display_counter++;
 
-    if(display_counter % 50 == 0) {
+    if(display_counter % 10000 == 0) {
       if (kpState.operation_mode == true) {
         char angle[3]= {'\0', '\0', '\0'};
         if (kpState.disp_state == ROLL) {
@@ -111,17 +111,17 @@ int main(void) {
 			}
     }
 
-    if (updateFlag == 1 && kpState.operation_mode == true) {
-      conversion(acc_output_values, axis_angles);
-			printf("acc values: %f %f %f\n", acc_output_values[0], acc_output_values[1], acc_output_values[2]);
-			printf("axis values:  PITCH: %f   ROLL: %f\n", axis_angles[0], axis_angles[1]);
-      comparison(axis_angles, kpState.pitch_angle, kpState.roll_angle,  angle_difference);
+    if (display_counter % 200000 == 0 && kpState.operation_mode == true) {
+			float normalized_acc_values[3];
+			getNormalizedAcc(acc_output_values, normalized_acc_values);
+      conversion(normalized_acc_values, axis_angles);
+			comparison(axis_angles, kpState.pitch_angle, kpState.roll_angle,  angle_difference);
       LEDSet(angle_difference);
       updateFlag=0;
     }
 
-    SysTickCount = SysTickCount == 100 ? 0 : SysTickCount;
-    display_counter = display_counter == 100 ? 0 : display_counter;
+    SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;
+    display_counter = display_counter == 200000 ? 0 : display_counter;
   }
 }
 
