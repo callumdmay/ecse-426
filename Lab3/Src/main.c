@@ -38,6 +38,7 @@
 #include "accelerometer.h"
 #include "segment_display.h"
 #include "main.h"
+#include "filter.h"
 #include "LED.h"
 #include "tim.h"
 #include "string.h"
@@ -77,31 +78,50 @@ int main(void) {
 
   initSegmentDisplay();
   int display_counter = 0;
-  
+  float acc_filtered_values[3];
+	char angle[3];
 	while (1) {
     display_counter++;
-
+		
+		//execute after every accelerometer interrupt
+		if (updateFlag ==1 && kpState.operation_mode == true)
+		{
+			//filter data
+			filterValues(acc_output_values, acc_filtered_values);
+			
+			//normalize values
+			float normalized_acc_values[3];
+			getNormalizedAcc(acc_filtered_values, normalized_acc_values);
+			
+			//convert values
+      conversion(normalized_acc_values, axis_angles);
+			
+			//compare values to input
+			comparison(axis_angles, kpState.pitch_angle, kpState.roll_angle,  angle_difference);
+			
+			//set LEDs
+			LEDSet(angle_difference);
+			
+			//reset flag
+			updateFlag=0;
+		}
+		
+		//Refresh 7-segment display
     if(display_counter % 10000 == 0) {
       if (kpState.operation_mode == true) {
-        char angle[3]= {'\0', '\0', '\0'};
-        if (kpState.disp_state == ROLL) {
-          int roll = (int)axis_angles[0];
-          sprintf(angle, "%d", roll);
-          updateSegmentDisplay(angle);
-        } else if (kpState.disp_state == PITCH) {
-          int pitch = (int)axis_angles[1];
-          sprintf(angle, "%d", pitch);
-          updateSegmentDisplay(angle);
-        }
+        updateSegmentDisplay(angle);
       } else {
         updateSegmentDisplay(kpState.num_buffer);
       }
     }
-
+		
+		//scan keypad for input
     if (SysTickCount % 30 == 0) {
       processKeypadInput(&kpState);
 			
 			if (kpState.operation_mode == false) {
+				int zero[2]={0};
+				LEDSet(zero);
 				printf("Buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
 				printf("Roll %d\n", kpState.roll_angle);
 				printf("Pitch %d\n", kpState.pitch_angle);
@@ -111,20 +131,26 @@ int main(void) {
 			}
     }
 
-    if (display_counter % 200000 == 0 && kpState.operation_mode == true) {
-			float normalized_acc_values[3];
-			getNormalizedAcc(acc_output_values, normalized_acc_values);
-      conversion(normalized_acc_values, axis_angles);
-			comparison(axis_angles, kpState.pitch_angle, kpState.roll_angle,  angle_difference);
-      LEDSet(angle_difference);
-      updateFlag=0;
-    }
-
+		//update value to be displayed by 7-segment
+		if (SysTickCount%250==0  && kpState.operation_mode==true)
+		{
+				angle[0]=angle[1]=angle[2]= '\0';
+        if (kpState.disp_state == ROLL) {
+          int roll = (int)axis_angles[0];
+          sprintf(angle, "%d", roll);
+          
+        } else if (kpState.disp_state == PITCH) {
+          int pitch = (int)axis_angles[1];
+          sprintf(angle, "%d", pitch);
+         
+        }
+		}
+	//reset counters
     SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;
     display_counter = display_counter == 200000 ? 0 : display_counter;
   }
 }
-
+//get Accelerometer value and set flag to execute accelerometer functions in main code
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   getACC(acc_output_values);
@@ -150,5 +176,6 @@ void assert_failed(uint8_t* file, uint32_t line)
 }
 
 #endif
+
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
