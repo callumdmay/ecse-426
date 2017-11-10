@@ -32,6 +32,7 @@ void initSegmentDisplay(void) {
   HAL_GPIO_Init(GPIOD, &GPIO_InitDef3);
 }
 
+//Management function for 7 segment, provide a char array of 4 values to write to the 7 segment
 void updateSegmentDisplay(char *num_buffer) {
   static int i = 0;
   if (num_buffer[i] != '\0') {
@@ -42,6 +43,7 @@ void updateSegmentDisplay(char *num_buffer) {
    i = i == 3 ? 0 : ++i;
 }
 
+//Given a digit index and value, update that value on the 7 segment
 static void updateDigit(int digit, int value) {
   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET); //All digits off
   updateSegments(value);
@@ -62,6 +64,7 @@ static void updateDigit(int digit, int value) {
   }
 }
 
+//Update segments for a specific digit
 static void updateSegments(int value) {
     if(value == -1) {
       HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11, GPIO_PIN_RESET);

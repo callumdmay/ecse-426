@@ -82,30 +82,30 @@ int main(void) {
 	char angle[3];
 	while (1) {
     display_counter++;
-		
+
 		//execute after every accelerometer interrupt
 		if (updateFlag ==1 && kpState.operation_mode == true)
 		{
 			//filter data
 			filterValues(acc_output_values, acc_filtered_values);
-			
+
 			//normalize values
 			float normalized_acc_values[3];
 			getNormalizedAcc(acc_filtered_values, normalized_acc_values);
-			
+
 			//convert values
       conversion(normalized_acc_values, axis_angles);
-			
+
 			//compare values to input
 			comparison(axis_angles, kpState.pitch_angle, kpState.roll_angle,  angle_difference);
-			
+
 			//set LEDs
 			LEDSet(angle_difference);
-			
+
 			//reset flag
 			updateFlag=0;
 		}
-		
+
 		//Refresh 7-segment display
     if(display_counter % 10000 == 0) {
       if (kpState.operation_mode == true) {
@@ -114,7 +114,7 @@ int main(void) {
         updateSegmentDisplay(kpState.num_buffer);
       }
     }
-		
+
 		//scan keypad for input
     if (SysTickCount % 30 == 0) {
       processKeypadInput(&kpState);
@@ -135,14 +135,15 @@ int main(void) {
         if (kpState.disp_state == ROLL) {
           int roll = (int)axis_angles[0];
           sprintf(angle, "%d", roll);
-          
+
         } else if (kpState.disp_state == PITCH) {
           int pitch = (int)axis_angles[1];
           sprintf(angle, "%d", pitch);
-         
+
         }
 		}
-	//reset counters
+
+     //reset counters
     SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;
     display_counter = display_counter == 200000 ? 0 : display_counter;
   }

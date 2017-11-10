@@ -18,7 +18,6 @@ double ACC_CALIBRATION_MATRIX[4][3] = {
 
 //initialize accelerometer with desired parameters
 void initializeACC(void){
-
   Acc_instance.Axes_Enable				= LIS3DSH_XYZ_ENABLE;
   Acc_instance.AA_Filter_BW				= LIS3DSH_AA_BW_50;
   Acc_instance.Full_Scale					= LIS3DSH_FULLSCALE_2;
@@ -26,8 +25,6 @@ void initializeACC(void){
   Acc_instance.Self_Test					= LIS3DSH_SELFTEST_NORMAL;
   Acc_instance.Continous_Update   = LIS3DSH_ContinousUpdate_Enabled;
   LIS3DSH_Init(&Acc_instance);
-
-
   /* Enabling interrupt conflicts with push button. Be careful when you plan to
   use the interrupt of the accelerometer sensor connceted to PIN A.0
   */
@@ -63,12 +60,12 @@ float* getACC(float *arr) {
   //Z axis only, Y axis only or Z axis only. If any or all changed, proceed
   if ((status & 0x0F) != 0x00) {
     LIS3DSH_ReadACC(&buffer[0]);
-		
+
 		arr[0] = (float)buffer[0]; //X
     arr[1] = (float)buffer[1]; //Y
     arr[2] = (float)buffer[2]; //Z
-		
-		
+
+
   }
   return arr;
 }
@@ -79,21 +76,21 @@ void conversion(float acc[3], float conv[2]) {
   conv[0] = atan(acc[0]/(sqrtf(powf(acc[1], 2) + powf(acc[2], 2))));
 	//Roll
   conv[1] = atan(acc[1]/(sqrtf(powf(acc[0], 2) + powf(acc[2], 2))));
-	
+
 	float PI = 3.141592654;
 	conv[0] = (conv[0]*180/PI)+90;
 	conv[1] = (conv[1]*180/PI)+90;
-	
+
 }
 
 void comparison (float actual[2], int pitch, int roll, int diff[2]) {
-  //pitcch
+  //pitch
 	diff[0] = abs(pitch - (int)actual[0]);
 	//roll
   diff[1] = abs(roll - (int)actual[1]);
 }
 
-//matrix multiplication to obtain normalized accelrometer values
+//matrix multiplication to obtain normalized accelerometer values
 void getNormalizedAcc(float acc[3], float output[3]) {
 		output[0] = output[1] = output[2] = 0;
 		int i, j;
@@ -106,5 +103,3 @@ void getNormalizedAcc(float acc[3], float output[3]) {
 				}
 			}
 }
-
-
