@@ -3,7 +3,7 @@
 
  float IIR(float InputArray[3], float outputArray[3]){
 	//filter coefficients
-	float coeffiecients[5]={1, 2, 1, 2, 1};
+	float coeffiecients[5]={0.2, 0.2, 0.2, 0.2, 0.2};
 	//filter equation
 	outputArray[0] = coeffiecients[0]*InputArray[0]+coeffiecients[1]*InputArray[1]+coeffiecients[2]*InputArray[2];
 return outputArray[0];

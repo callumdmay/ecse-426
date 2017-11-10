@@ -118,17 +118,14 @@ int main(void) {
 		//scan keypad for input
     if (SysTickCount % 30 == 0) {
       processKeypadInput(&kpState);
-			
-			if (kpState.operation_mode == false) {
-				int zero[2]={0};
-				LEDSet(zero);
-				printf("Buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
-				printf("Roll %d\n", kpState.roll_angle);
-				printf("Pitch %d\n", kpState.pitch_angle);
-				printf("Operation %d\n", kpState.operation_mode);
-				printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
-				printf("\n");
-			}
+			int zero[2]={0};
+			LEDSet(zero);
+			printf("Buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
+			printf("Roll %d\n", kpState.roll_angle);
+			printf("Pitch %d\n", kpState.pitch_angle);
+			printf("Operation %d\n", kpState.operation_mode);
+			printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
+			printf("\n");
     }
 
 		//update value to be displayed by 7-segment
