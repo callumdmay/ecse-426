@@ -6,7 +6,7 @@ void LEDSet(int diff[2]) {
   int MAX_DIFFERENCE = 180;
   int roll;
   int pitch;
-	int MAX_VALUE = 840;
+	int MAX_VALUE = 100;
 
   if (diff[0] > 5) {
     roll = diff[0] * MAX_VALUE / MAX_DIFFERENCE;

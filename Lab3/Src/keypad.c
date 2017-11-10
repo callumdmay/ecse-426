@@ -171,11 +171,13 @@ void processKeypadInput(struct keypadState *state) {
 			if (debounce_counter > DEBOUNCE_THRESHOLD && debounce_down_counter > 0) {
 				debounce_down_counter--;
 			} else {
-				if (debounce_counter >= 60 && last_char == '#') {
+				if (debounce_counter >= 2000 && last_char == '#' && state-> pitch_angle != -1 && state->roll_angle != -1) {
 					state->operation_mode = true;
-				} else if (debounce_counter >= 60 && last_char == '*') {
+					
+				} else if (debounce_counter >= 2000 && last_char == '*' && state-> pitch_angle != -1 && state->roll_angle != -1) {
 					state->operation_mode = false;
-				} else if (debounce_counter >= 30 && last_char == '*') {
+					
+				} else if (debounce_counter >= 500 && last_char == '*') {
 					if (state->operation_mode ==  true) {
 						initKeypadState(state);
 					}

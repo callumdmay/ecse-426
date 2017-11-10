@@ -88,7 +88,7 @@ int main(void) {
 		{
 			//filter data
 			filterValues(acc_output_values, acc_filtered_values);
-
+			
 			//normalize values
 			float normalized_acc_values[3];
 			getNormalizedAcc(acc_filtered_values, normalized_acc_values);
@@ -116,17 +116,20 @@ int main(void) {
     }
 
 		//scan keypad for input
-    if (SysTickCount % 30 == 0) {
+    if (SysTickCount % 50 == 0) {
       processKeypadInput(&kpState);
 			int zero[2]={0};
 			LEDSet(zero);
-			printf("Buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
-			printf("Roll %d\n", kpState.roll_angle);
-			printf("Pitch %d\n", kpState.pitch_angle);
-			printf("Operation %d\n", kpState.operation_mode);
-			printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
-			printf("\n");
     }
+		
+		if (SysTickCount % 100 == 0) {
+			/*	printf("Buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
+				printf("Roll %d\n", kpState.roll_angle);
+				printf("Pitch %d\n", kpState.pitch_angle);
+				printf("Operation %d\n", kpState.operation_mode);
+				printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
+				printf("\n");*/
+		}
 
 		//update value to be displayed by 7-segment
 		if (SysTickCount%250==0  && kpState.operation_mode==true)
@@ -144,7 +147,7 @@ int main(void) {
 		}
 
      //reset counters
-    SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;
+		SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;
     display_counter = display_counter == 200000 ? 0 : display_counter;
   }
 }
