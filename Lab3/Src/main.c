@@ -110,6 +110,24 @@ int main(void) {
     if(display_counter % 10000 == 0) {
       if (kpState.operation_mode == true) {
         updateSegmentDisplay(angle);
+        char angle[3]= {'\0', '\0', '\0'};
+        if (kpState.disp_state == ROLL) {
+					if (kpState.disp_type == ENTERED) {
+						sprintf(angle, "%d", kpState.roll_angle);
+					} else {
+						int roll = (int)axis_angles[0];
+						sprintf(angle, "%d", roll);
+					}
+          updateSegmentDisplay(angle);
+        } else if (kpState.disp_state == PITCH) {
+					if (kpState.disp_type == ENTERED) {
+						sprintf(angle, "%d", kpState.pitch_angle);
+					} else {
+						int pitch = (int)axis_angles[1];
+						sprintf(angle, "%d", pitch);
+					}
+          updateSegmentDisplay(angle);
+        }
       } else {
         updateSegmentDisplay(kpState.num_buffer);
       }

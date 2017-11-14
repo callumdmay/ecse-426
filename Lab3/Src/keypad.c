@@ -11,6 +11,7 @@ void initKeypadState(struct keypadState *state) {
 	state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
 	state->operation_mode = false;
 	state->disp_state = ROLL;
+	state->disp_type = MEASURED; 
 }
 
 //Initialize GPIO pins
@@ -86,7 +87,7 @@ char scanKeypad(void) {
 	return '\0';
 }
 
-//Update keypad state
+//Update keypad state with input char
 void updateKeypadState(struct keypadState *state, char val) {
 	int i;
 	int length = sizeof(state->num_buffer)/sizeof(char);
@@ -102,36 +103,48 @@ void updateKeypadState(struct keypadState *state, char val) {
 			}
 			break;
 		case '#':
-			for (i = 0; i < length; i++) {
-				if (state->num_buffer[i] != '\0') {
-					has_buffer = true;
+			
+			if (state->operation_mode == false) {
+				for (i = 0; i < length; i++) {
+					if (state->num_buffer[i] != '\0') {
+						has_buffer = true;
+					}
+				}
+
+				if (!has_buffer) {
+					return;
+				}
+
+				if (state->roll_angle == -1) {
+					int buf_val;
+					sscanf(state->num_buffer, "%d", &buf_val);
+					if (buf_val >=0 && buf_val <= 180) {
+						state->roll_angle = buf_val;
+						state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
+					}
+					return;
+				}
+
+				if (state->pitch_angle == -1) {
+					int buf_val;
+					sscanf(state->num_buffer, "%d", &buf_val);
+					if (buf_val >=0 && buf_val <= 180) {
+						state->pitch_angle = buf_val;
+						state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
+					}
+				}
+
+				state->operation_mode = true;
+			} else {
+				if (state->disp_type == MEASURED) {
+					state->disp_type = ENTERED;
+				} 
+
+				if (state->disp_type == ENTERED) {
+					state->disp_type = MEASURED;
 				}
 			}
-
-			if (!has_buffer) {
-				return;
-			}
-
-			if (state->roll_angle == -1) {
-				int buf_val;
-				sscanf(state->num_buffer, "%d", &buf_val);
-				if (buf_val >=0 && buf_val <= 180) {
-					state->roll_angle = buf_val;
-					state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
-				}
-				return;
-			}
-
-			if (state->pitch_angle == -1) {
-				int buf_val;
-				sscanf(state->num_buffer, "%d", &buf_val);
-				if (buf_val >=0 && buf_val <= 180) {
-					state->pitch_angle = buf_val;
-					state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
-				}
-			}
-
-			state->operation_mode = true;
+			
 			break;
 		default:
 			if(state->operation_mode == true) {
@@ -154,6 +167,7 @@ void updateKeypadState(struct keypadState *state, char val) {
 	}
 }
 
+//This function debounces the keypad input into a usable value
 void processKeypadInput(struct keypadState *state) {
 	static int debounce_counter = 0;
 	static int debounce_down_counter = DEBOUNCE_THRESHOLD;
