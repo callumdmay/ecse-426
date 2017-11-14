@@ -80,6 +80,7 @@ int main(void) {
   int display_counter = 0;
   float acc_filtered_values[3];
 	char angle[3];
+	bool on = true;
 	while (1) {
     display_counter++;
 
@@ -136,8 +137,6 @@ int main(void) {
 		//scan keypad for input
     if (SysTickCount % 50 == 0) {
       processKeypadInput(&kpState);
-			int zero[2]={0};
-			LEDSet(zero);
     }
 		
 		if (SysTickCount % 100 == 0) {
@@ -164,7 +163,7 @@ int main(void) {
         }
 		}
 
-     //reset counters
+    //reset counters
 		SysTickCount = SysTickCount == 1000 ? 0 : SysTickCount;
     display_counter = display_counter == 200000 ? 0 : display_counter;
   }

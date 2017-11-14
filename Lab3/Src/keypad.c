@@ -1,6 +1,7 @@
 #include "keypad.h"
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
+#include "LED.h"
 
 GPIO_InitTypeDef GPIO_InitDef_Row;
 GPIO_InitTypeDef GPIO_InitDef_Col;
@@ -187,13 +188,14 @@ void processKeypadInput(struct keypadState *state) {
 			} else {
 				if (debounce_counter >= 2000 && last_char == '#' && state-> pitch_angle != -1 && state->roll_angle != -1) {
 					state->operation_mode = true;
-					
 				} else if (debounce_counter >= 2000 && last_char == '*' && state-> pitch_angle != -1 && state->roll_angle != -1) {
 					state->operation_mode = false;
-					
 				} else if (debounce_counter >= 500 && last_char == '*') {
 					if (state->operation_mode ==  true) {
 						initKeypadState(state);
+						//Turn the LED off
+						int zero[2]={0};
+						LEDSet(zero);
 					}
 				} else if (debounce_counter >= DEBOUNCE_THRESHOLD) {
 					updateKeypadState(state, last_char);
