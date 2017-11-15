@@ -1,9 +1,33 @@
-#include "keypad.h"
 #include "stm32f4xx_hal.h"
+#include "cmsis_os.h"
+#include "keypad.h"
 #include "LED.h"
+
+void initKeypadState(struct keypadState *state);
+void updateKeypadState(struct keypadState *state, char val);
+void processKeypadInput(struct keypadState *kpState);
+void Thread_keypad (void const *argument);      // thread function
+void initKeypad(void);
 
 GPIO_InitTypeDef GPIO_InitDef_Row;
 GPIO_InitTypeDef GPIO_InitDef_Col;
+
+osThreadId tid_Thread_keypad;                              // thread id
+osThreadDef(Thread_keypad, osPriorityNormal, 1, 0);
+
+int start_Thread_Keypad (void) {
+	tid_Thread_keypad = osThreadCreate(osThread(Thread_keypad), NULL);
+	if (!tid_Thread_keypad) return(-1);
+
+  return(0);
+}
+
+void Thread_keypad (void const *argument) {
+	initKeypad();
+  while(1) {
+    osDelay(230);
+  }
+}
 
 void initKeypadState(struct keypadState *state) {
 	state->roll_angle = -1;

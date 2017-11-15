@@ -19,6 +19,7 @@
 #include "LED.h"
 #include "tim.h"
 #include "clock.h"
+#include "keypad.h"
 
 //The thread code is written in Thread_LED.c, just telling the toolchain that the
 //functions are declared externally
@@ -26,7 +27,7 @@ extern void initializeLED_IO			(void);
 extern void start_Thread_LED			(void);
 extern void Thread_LED(void const *argument);
 extern osThreadId tid_Thread_LED;
-
+extern osThreadId tid_Thread_keypad; 
 /**
 	These lines are mandatory to make CMSIS-RTOS RTX work with te new Cube HAL
 */
@@ -48,11 +49,9 @@ int main (void) {
   HAL_Init();                               /* Initialize the HAL Library     */
 
   SystemClock_Config();                     /* Configure the System Clock     */
-
-	/* User codes goes here*/
   initializeLED_IO();                       /* Initialize LED GPIO Buttons    */
   start_Thread_LED();                       /* Create LED thread              */
-	/* User codes ends here*/
+	start_Thread_Keypad(); 
 
 	osKernelStart();                          /* start thread execution         */
 }

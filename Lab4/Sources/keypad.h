@@ -15,11 +15,7 @@ struct keypadState {
 };
 
 #define DEBOUNCE_THRESHOLD 10
-void initKeypad(void);
-char scanKeypad(void);
 
-void initKeypadState(struct keypadState *state);
-void updateKeypadState(struct keypadState *state, char val);
-void processKeypadInput(struct keypadState *kpState);
+int start_Thread_Keypad (void);
 
 #endif
