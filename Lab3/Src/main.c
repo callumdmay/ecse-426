@@ -80,7 +80,7 @@ int main(void) {
   int display_counter = 0;
   float acc_filtered_values[3];
 	char angle[3];
-	bool on = true;
+
 	while (1) {
     display_counter++;
 
@@ -89,7 +89,7 @@ int main(void) {
 		{
 			//filter data
 			filterValues(acc_output_values, acc_filtered_values);
-			
+
 			//normalize values
 			float normalized_acc_values[3];
 			getNormalizedAcc(acc_filtered_values, normalized_acc_values);
@@ -110,7 +110,6 @@ int main(void) {
 		//Refresh 7-segment display
     if(display_counter % 10000 == 0) {
       if (kpState.operation_mode == true) {
-        updateSegmentDisplay(angle);
         char angle[3]= {'\0', '\0', '\0'};
         if (kpState.disp_state == ROLL) {
 					if (kpState.disp_type == ENTERED) {
@@ -135,21 +134,12 @@ int main(void) {
     }
 
 		//scan keypad for input
-    if (SysTickCount % 50 == 0) {
+    if (display_counter % 10000 == 0) {
       processKeypadInput(&kpState);
     }
-		
-		if (SysTickCount % 100 == 0) {
-			/*	printf("Buffer: %c %c %c\n", kpState.num_buffer[0],kpState.num_buffer[1], kpState.num_buffer[2]);
-				printf("Roll %d\n", kpState.roll_angle);
-				printf("Pitch %d\n", kpState.pitch_angle);
-				printf("Operation %d\n", kpState.operation_mode);
-				printf("Monitoring %s\n", kpState.disp_state == ROLL ? "ROLL" : "PITCH");
-				printf("\n");*/
-		}
 
 		//update value to be displayed by 7-segment
-		if (SysTickCount%250==0  && kpState.operation_mode==true)
+		if (SysTickCount % 250 == 0  && kpState.operation_mode==true)
 		{
 				angle[0]=angle[1]=angle[2]= '\0';
         if (kpState.disp_state == ROLL) {
@@ -159,7 +149,6 @@ int main(void) {
         } else if (kpState.disp_state == PITCH) {
           int pitch = (int)axis_angles[1];
           sprintf(angle, "%d", pitch);
-
         }
 		}
 

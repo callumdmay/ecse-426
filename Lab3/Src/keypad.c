@@ -12,7 +12,7 @@ void initKeypadState(struct keypadState *state) {
 	state->num_buffer[0] = state->num_buffer[1] = state->num_buffer[2] = '\0';
 	state->operation_mode = false;
 	state->disp_state = ROLL;
-	state->disp_type = MEASURED; 
+	state->disp_type = MEASURED;
 }
 
 //Initialize GPIO pins
@@ -104,7 +104,7 @@ void updateKeypadState(struct keypadState *state, char val) {
 			}
 			break;
 		case '#':
-			
+
 			if (state->operation_mode == false) {
 				for (i = 0; i < length; i++) {
 					if (state->num_buffer[i] != '\0') {
@@ -139,13 +139,11 @@ void updateKeypadState(struct keypadState *state, char val) {
 			} else {
 				if (state->disp_type == MEASURED) {
 					state->disp_type = ENTERED;
-				} 
-
-				if (state->disp_type == ENTERED) {
+				} else {
 					state->disp_type = MEASURED;
 				}
 			}
-			
+
 			break;
 		default:
 			if(state->operation_mode == true) {
@@ -186,11 +184,11 @@ void processKeypadInput(struct keypadState *state) {
 			if (debounce_counter > DEBOUNCE_THRESHOLD && debounce_down_counter > 0) {
 				debounce_down_counter--;
 			} else {
-				if (debounce_counter >= 2000 && last_char == '#' && state-> pitch_angle != -1 && state->roll_angle != -1) {
+				if (debounce_counter >= 400 && last_char == '#' && state-> pitch_angle != -1 && state->roll_angle != -1) {
 					state->operation_mode = true;
-				} else if (debounce_counter >= 2000 && last_char == '*' && state-> pitch_angle != -1 && state->roll_angle != -1) {
+				} else if (debounce_counter >= 400 && last_char == '*' && state-> pitch_angle != -1 && state->roll_angle != -1) {
 					state->operation_mode = false;
-				} else if (debounce_counter >= 500 && last_char == '*') {
+				} else if (debounce_counter >= 100 && last_char == '*') {
 					if (state->operation_mode ==  true) {
 						initKeypadState(state);
 						//Turn the LED off
