@@ -459,6 +459,16 @@
               <FileType>5</FileType>
               <FilePath>.\Sources\tim.h</FilePath>
             </File>
+            <File>
+              <FileName>clock.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\clock.h</FilePath>
+            </File>
+            <File>
+              <FileName>clock.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\clock.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -933,6 +943,16 @@
               <FileType>5</FileType>
               <FilePath>.\Sources\tim.h</FilePath>
             </File>
+            <File>
+              <FileName>clock.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\clock.h</FilePath>
+            </File>
+            <File>
+              <FileName>clock.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\clock.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1405,6 +1425,16 @@
               <FileName>tim.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Sources\tim.h</FilePath>
+            </File>
+            <File>
+              <FileName>clock.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\clock.h</FilePath>
+            </File>
+            <File>
+              <FileName>clock.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\clock.c</FilePath>
             </File>
           </Files>
         </Group>
