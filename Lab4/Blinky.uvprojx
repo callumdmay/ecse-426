@@ -445,11 +445,6 @@
               <FilePath>.\Sources\LED.h</FilePath>
             </File>
             <File>
-              <FileName>main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Sources\main.h</FilePath>
-            </File>
-            <File>
               <FileName>segment_display.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Sources\segment_display.h</FilePath>
@@ -929,11 +924,6 @@
               <FilePath>.\Sources\LED.h</FilePath>
             </File>
             <File>
-              <FileName>main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Sources\main.h</FilePath>
-            </File>
-            <File>
               <FileName>segment_display.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Sources\segment_display.h</FilePath>
@@ -1410,11 +1400,6 @@
               <FileName>LED.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Sources\LED.h</FilePath>
-            </File>
-            <File>
-              <FileName>main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Sources\main.h</FilePath>
             </File>
             <File>
               <FileName>segment_display.h</FileName>

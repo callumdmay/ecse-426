@@ -15,7 +15,6 @@
 #include "RTE_Components.h"             // Component selection
 #include "accelerometer.h"
 #include "segment_display.h"
-#include "main.h"
 #include "filter.h"
 #include "LED.h"
 #include "tim.h"
