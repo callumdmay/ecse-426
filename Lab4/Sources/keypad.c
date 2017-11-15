@@ -15,11 +15,8 @@ GPIO_InitTypeDef GPIO_InitDef_Col;
 osThreadId tid_Thread_keypad;                              // thread id
 osThreadDef(Thread_keypad, osPriorityNormal, 1, 0);
 
-int start_Thread_Keypad (void) {
+void start_thread_keypad (void) {
 	tid_Thread_keypad = osThreadCreate(osThread(Thread_keypad), NULL);
-	if (!tid_Thread_keypad) return(-1);
-
-  return(0);
 }
 
 void Thread_keypad (void const *argument) {

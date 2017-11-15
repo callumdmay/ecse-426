@@ -1,10 +1,19 @@
 #include "lis3dsh.h"
 #include "stm32f4xx_hal.h"
+#include "cmsis_os.h"
 #include "keypad.h"
 #include <math.h>
 #include <stdlib.h>
 
-LIS3DSH_InitTypeDef 		Acc_instance;
+void Thread_acc (void const *argument);
+void initializeACC(void);
+void ITInit(void);
+float* getACC(float *arr);
+void conversion(float acc[3], float out[2]);
+void comparison (float actual[2], int pitch, int roll, int diff[2]);
+void getNormalizedAcc(float acc[3], float output[3]);
+
+LIS3DSH_InitTypeDef Acc_instance;
 LIS3DSH_DRYInterruptConfigTypeDef AccIT;
 GPIO_InitTypeDef GPIO_InitStruct;
 SPI_HandleTypeDef hspi;
@@ -15,6 +24,19 @@ double ACC_CALIBRATION_MATRIX[4][3] = {
 														{0.00000101638125, 0.00000478541733, 0.000963788305},
 														{-0.00438112020, -0.000916585326, 0.000590100884}};
 
+osThreadId tid_Thread_acc;                              // thread id
+osThreadDef(Thread_acc, osPriorityNormal, 1, 0);
+
+void start_thread_acc (void) {
+	tid_Thread_acc = osThreadCreate(osThread(Thread_acc), NULL);
+}
+
+void Thread_acc (void const *argument) {
+	initializeACC();
+  while(1) {
+    osDelay(230);
+  }
+}
 //initialize accelerometer with desired parameters
 void initializeACC(void){
   Acc_instance.Axes_Enable				= LIS3DSH_XYZ_ENABLE;
@@ -63,8 +85,6 @@ float* getACC(float *arr) {
 		arr[0] = (float)buffer[0]; //X
     arr[1] = (float)buffer[1]; //Y
     arr[2] = (float)buffer[2]; //Z
-
-
   }
   return arr;
 }
