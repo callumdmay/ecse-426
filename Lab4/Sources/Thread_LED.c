@@ -3,27 +3,23 @@
   * @author  Amirhossein Shahshahani
 	* @version V1.2.0
   * @date    10-Nov-2017
-  * @brief   This file initializes one LED as an output, implements the LED thread 
-  *					 which toggles and LED, and function which creates and starts the thread	
+  * @brief   This file initializes one LED as an output, implements the LED thread
+  *					 which toggles and LED, and function which creates and starts the thread
   ******************************************************************************
   */
-	
+
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "stm32f4xx_hal.h"
 
 void Thread_LED_1 (void const *argument);                 // thread function
-void Thread_LED_2 (void const *argument);                 // thread function
-void Thread_LED_3 (void const *argument);                 // thread function
 osThreadId tid_Thread_LED_1;                              // thread id
-osThreadId tid_Thread_LED_2;                              // thread id
-osThreadId tid_Thread_LED_3;                              // thread id
 
 /*		**** depending on the version of the CMSIS library, you may need to make your threads in different way:   *******
 
 	osThreadDef(Thread_1,Thread_LED, osPriorityNormal, osPriorityNormal, 128);
 	osThreadDef(Thread_2, Thread_LED_2, osPriorityNormal, osPriorityNormal, 128);
 	osThreadDef(Thread_3, Thread_LED_3, osPriorityNormal, osPriorityNormal, 128);
- 
+
 	tid_Thread_LED_1 = osThreadCreate(osThread(Thread_1), NULL);
 	tid_Thread_LED_2 = osThreadCreate(osThread(Thread_2), NULL);
 	tid_Thread_LED_3 = osThreadCreate(osThread(Thread_3), NULL);
@@ -34,8 +30,6 @@ osThreadId tid_Thread_LED_3;                              // thread id
 
 // Following is different format of creating your threads. This project is based on the older CMSIS version.
 osThreadDef(Thread_LED_1, osPriorityNormal, 1, 0);
-osThreadDef( Thread_LED_2, osPriorityNormal, 1, 0);
-osThreadDef( Thread_LED_3, osPriorityNormal, 1, 0);
 GPIO_InitTypeDef 				LED_configuration;
 
 /*----------------------------------------------------------------------------
@@ -44,12 +38,10 @@ GPIO_InitTypeDef 				LED_configuration;
 int start_Thread_LED (void) {
 
 	tid_Thread_LED_1 = osThreadCreate(osThread(Thread_LED_1), NULL);
-	tid_Thread_LED_2 = osThreadCreate(osThread(Thread_LED_2), NULL);
-	tid_Thread_LED_3 = osThreadCreate(osThread(Thread_LED_3), NULL);
-  //if (!tid_Thread_LED_1) return(-1); 
-	//else if (!tid_Thread_LED_2) return(-1); 
-	//else if (!tid_Thread_LED_3) return(-1); 
- // return(0);
+  //if (!tid_Thread_LED_1) return(-1);
+	//else if (!tid_Thread_LED_2) return(-1);
+	//else if (!tid_Thread_LED_3) return(-1);
+ return(0);
 }
 
  /*----------------------------------------------------------------------------
@@ -61,34 +53,20 @@ int start_Thread_LED (void) {
 				HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
 			}
 	}
-	
-	
-	void Thread_LED_2 (void const *argument) {
-		while(1){
-				osDelay(230);
-				HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
-			}
-	}	
-	
-		void Thread_LED_3 (void const *argument) {
-		while(1){
-				osDelay(230);
-				HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
-			}
-	}
+
 /*----------------------------------------------------------------------------
  *      Initialize the GPIO associated with the LED
  *---------------------------------------------------------------------------*/
 	void initializeLED_IO (void){
-	
+
 	__HAL_RCC_GPIOD_CLK_ENABLE();
-	
-	LED_configuration.Pin		= GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
+
+	LED_configuration.Pin		= GPIO_PIN_12|GPIO_PIN_15;
 	LED_configuration.Mode 	= GPIO_MODE_OUTPUT_PP;
 	LED_configuration.Speed	= GPIO_SPEED_FREQ_VERY_HIGH;
 	LED_configuration.Pull	= GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOD, &LED_configuration);	
+	HAL_GPIO_Init(GPIOD, &LED_configuration);
 }
 /*----------------------------------------------------------------------------
- *      
+ *
  *---------------------------------------------------------------------------*/
