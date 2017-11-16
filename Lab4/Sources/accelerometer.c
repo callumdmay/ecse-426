@@ -78,7 +78,6 @@ void initializeACC(void){
 
 //initialize interrupt for accelerometer
 void ITInit(void){
-
   AccIT.Dataready_Interrupt = LIS3DSH_DATA_READY_INTERRUPT_ENABLED;
   AccIT.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
   AccIT.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_PULSED;

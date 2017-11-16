@@ -41,7 +41,6 @@ uint32_t HAL_GetTick(void) {
   * Main function
   */
 int main (void) {
-
   osKernelInitialize();                     /* initialize CMSIS-RTOS          */
 
   HAL_Init();                               /* Initialize the HAL Library     */
@@ -49,6 +48,13 @@ int main (void) {
   SystemClock_Config();                     /* Configure the System Clock     */
 
 	MX_GPIO_Init();
+
+  //Init 4 LEDs with PWM
+  MX_TIM4_Init();
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
 
   //Init functions
   initKeypad();

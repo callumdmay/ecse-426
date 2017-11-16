@@ -20,7 +20,7 @@ void start_thread_segment_display (void) {
 //accelerometer thread entry point function
 void Thread_segment_display (void const *argument) {
 	while(1) {
-    osDelay(5);
+    osDelay(2);
     osMutexWait(keypad_mutex, osWaitForever);
     if (kpState.operation_mode == true) {
       char angle[3]= {'\0', '\0', '\0'};
