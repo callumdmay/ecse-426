@@ -244,6 +244,8 @@ void processKeypadInput(struct keypadState *state) {
 
 void enterLowPowerMode(struct keypadState *state) {
   state->operation_mode = false;
+	LED_PowerDown();
+	ACC_PowerDown();
   osSignalSet(tid_Thread_LED, 0x05);
   osSignalSet(tid_Thread_segment_display, 0x05);
 }
@@ -252,6 +254,8 @@ void enterOperationMode(struct keypadState *state) {
   state->operation_mode = true;
   osSignalSet(tid_Thread_LED, 0x04);
   osSignalSet(tid_Thread_segment_display, 0x04);
+	LED_PowerUp();
+	ACC_PowerUp();
 }
 
 void startPeripheralThreads(struct keypadState *state) {
