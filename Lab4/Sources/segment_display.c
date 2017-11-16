@@ -2,6 +2,7 @@
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "segment_display.h"
 #include "keypad.h"
+#include "accelerometer.h"
 
 void Thread_segment_display (void const *argument);
 void updateSegmentDisplay(char *num_buffer);
@@ -27,8 +28,10 @@ void Thread_segment_display (void const *argument) {
         if (kpState.disp_type == ENTERED) {
           sprintf(angle, "%d", kpState.roll_angle);
         } else {
-         // int roll = (int)axis_angles[0];
-          //sprintf(angle, "%d", roll);
+          //osMutexWait(acc_mutex, osWaitForever);
+          int roll = (int)axis_angles[0];
+          //osMutexRelease(acc_mutex);
+          sprintf(angle, "%d", roll);
         }
         osMutexRelease(keypad_mutex);
         updateSegmentDisplay(angle);
@@ -36,8 +39,10 @@ void Thread_segment_display (void const *argument) {
         if (kpState.disp_type == ENTERED) {
           sprintf(angle, "%d", kpState.pitch_angle);
         } else {
-          //int pitch = (int)axis_angles[1];
-          //sprintf(angle, "%d", pitch);
+        //  osMutexWait(acc_mutex, osWaitForever);
+          int pitch = (int)axis_angles[1];
+        //  osMutexRelease(acc_mutex);
+          sprintf(angle, "%d", pitch);
         }
         osMutexRelease(keypad_mutex);
         updateSegmentDisplay(angle);

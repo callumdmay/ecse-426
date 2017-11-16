@@ -1,11 +1,14 @@
 #include "stm32f4xx_hal.h"
 #include "keypad.h"
 #include "LED.h"
+#include "accelerometer.h"
 
 void initKeypadState(struct keypadState *state);
 void updateKeypadState(struct keypadState *state, char val);
 void processKeypadInput(struct keypadState *kpState);
 void Thread_keypad (void const *argument);      // thread function
+void startPeripherals(void);
+void stopPeripherals(void);
 
 GPIO_InitTypeDef GPIO_InitDef_Row;
 GPIO_InitTypeDef GPIO_InitDef_Col;
@@ -19,12 +22,10 @@ osMutexDef(keypad_mutex);
 osThreadId tid_Thread_keypad;                              // thread id
 osThreadDef(Thread_keypad, osPriorityNormal, 1, 0);
 
-
 //Start our keypad thread
 void start_thread_keypad (void) {
 	tid_Thread_keypad = osThreadCreate(osThread(Thread_keypad), NULL);
 }
-
 
 //keypad thread entry point function
 void Thread_keypad (void const *argument) {
@@ -166,6 +167,7 @@ void updateKeypadState(struct keypadState *state, char val) {
 				}
 
 				state->operation_mode = true;
+        startPeripherals();
 			} else {
 				if (state->disp_type == MEASURED) {
 					state->disp_type = ENTERED;
@@ -218,6 +220,7 @@ void processKeypadInput(struct keypadState *state) {
         osMutexWait(keypad_mutex, osWaitForever);
 				if (debounce_counter >= 400 && last_char == '#' && state-> pitch_angle != -1 && state->roll_angle != -1) {
 					state->operation_mode = true;
+          startPeripherals();
 				} else if (debounce_counter >= 400 && last_char == '*' && state-> pitch_angle != -1 && state->roll_angle != -1) {
 					state->operation_mode = false;
 				} else if (debounce_counter >= 100 && last_char == '*') {
@@ -231,4 +234,13 @@ void processKeypadInput(struct keypadState *state) {
 				debounce_counter = 0;
 			}
 	}
+}
+
+void startPeripherals(void) {
+  start_thread_acc();
+  start_thread_LED();
+}
+
+void stopPeripherals(void) {
+
 }

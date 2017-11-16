@@ -1,27 +1,20 @@
 #include "lis3dsh.h"
 #include "stm32f4xx_hal.h"
-#include "cmsis_os.h"
 #include "keypad.h"
 #include "filter.h"
 #include "accelerometer.h"
-
 #include <math.h>
-#include <stdlib.h>
 
 void Thread_acc (void const *argument);
 void ITInit(void);
-float* getACC(float *arr);
+void getACC(float *arr);
 void conversion(float acc[3], float out[2]);
-void comparison (float actual[2], int pitch, int roll, int diff[2]);
 void getNormalizedAcc(float acc[3], float output[3]);
-float buffer[3];
 int comparedValues[2];
-float convertedValues[2];
-osMutexId conversion_mutex;
-osMutexId comparison_mutex;
-	
-osMutexDef(conversion_mutex);
-osMutexDef(comparison_mutex);
+float axis_angles[2];
+float raw_acc_data_buffer[3];
+osMutexId acc_mutex;
+osMutexDef(acc_mutex);
 
 LIS3DSH_InitTypeDef Acc_instance;
 LIS3DSH_DRYInterruptConfigTypeDef AccIT;
@@ -48,23 +41,25 @@ void Thread_acc (void const *argument) {
 
 	float filteredValues[3];
 	float normalizedValues[3];
-	
-	
-	
-	
   while(1) {
-		osSignalWait(0x01, 0);
-		filterValues(buffer, filteredValues);
+		osSignalWait(0x01, osWaitForever);
+    getACC(raw_acc_data_buffer);
+		filterValues(raw_acc_data_buffer, filteredValues);
 		getNormalizedAcc(filteredValues, normalizedValues);
-		
-		
-		conversion(normalizedValues, convertedValues);
-		
-		
-		
-		comparison(convertedValues,PITCH,ROLL, comparedValues);
-		
+    osMutexWait(acc_mutex, osWaitForever);
+		conversion(normalizedValues, axis_angles);
+    osMutexRelease(acc_mutex);
   }
+}
+
+void EXTI0_IRQHandler(void)
+{
+	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+
+}
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  osSignalSet(tid_Thread_acc, 0x01);
 }
 
 //initialize accelerometer with desired parameters
@@ -98,24 +93,22 @@ void ITInit(void){
 
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 1);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-
-
 }
 
 //get accelerometer raw data
-float* getACC(float *arr) {
+void getACC(float *arr) {
   uint8_t status;
   LIS3DSH_Read (&status, LIS3DSH_STATUS, 1);
   //The first four bits denote if we have new data on all XYZ axes,
   //Z axis only, Y axis only or Z axis only. If any or all changed, proceed
   if ((status & 0x0F) != 0x00) {
+    float buffer[3];
     LIS3DSH_ReadACC(&buffer[0]);
 
 		arr[0] = (float)buffer[0]; //X
     arr[1] = (float)buffer[1]; //Y
     arr[2] = (float)buffer[2]; //Z
   }
-  return arr;
 }
 
 //acc contains [x, y, z], conv is output
@@ -128,14 +121,6 @@ void conversion(float acc[3], float conv[2]) {
 	float PI = 3.141592654;
 	conv[0] = (conv[0]*180/PI)+90;
 	conv[1] = (conv[1]*180/PI)+90;
-
-}
-
-void comparison (float actual[2], int pitch, int roll, int diff[2]) {
-  //pitch
-	diff[0] = abs(pitch - (int)actual[0]);
-	//roll
-  diff[1] = abs(roll - (int)actual[1]);
 }
 
 //matrix multiplication to obtain normalized accelerometer values

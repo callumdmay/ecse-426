@@ -58,19 +58,7 @@ int main (void) {
 
   //Start threads
   start_thread_keypad();
-  start_thread_acc();
   start_thread_segment_display();
-  start_thread_LED();
 
 	osKernelStart();                          /* start thread execution         */
 }
-void EXTI0_IRQHandler(void)
-{
-	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
-	
-}
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  osSignalSet(tid_Thread_acc, 0x01);
-}
-
