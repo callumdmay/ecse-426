@@ -216,6 +216,7 @@ void processKeypadInput(struct keypadState *state) {
 			if (debounce_counter > DEBOUNCE_THRESHOLD && debounce_down_counter > 0) {
 				debounce_down_counter--;
 			} else {
+        osMutexWait(keypad_mutex, osWaitForever);
 				if (debounce_counter >= 400 && last_char == '#' && state-> pitch_angle != -1 && state->roll_angle != -1) {
 					state->operation_mode = true;
 				} else if (debounce_counter >= 400 && last_char == '*' && state-> pitch_angle != -1 && state->roll_angle != -1) {
@@ -223,11 +224,9 @@ void processKeypadInput(struct keypadState *state) {
 				} else if (debounce_counter >= 100 && last_char == '*') {
 					initKeypadState(state);
 				} else if (debounce_counter >= DEBOUNCE_THRESHOLD) {
-					osMutexWait(keypad_mutex, osWaitForever);
 					updateKeypadState(state, last_char);
-          osMutexRelease(keypad_mutex);
-
 				}
+        osMutexRelease(keypad_mutex);
 				debounce_down_counter = DEBOUNCE_THRESHOLD;
 				last_char = '\0';
 				debounce_counter = 0;
