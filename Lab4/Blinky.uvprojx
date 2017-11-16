@@ -10,6 +10,7 @@
       <TargetName>STM32F407 RAM</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -131,13 +132,13 @@
             <UseTargetDll>1</UseTargetDll>
             <UseExternalTool>0</UseExternalTool>
             <RunIndependent>0</RunIndependent>
-            <UpdateFlashBeforeDebugging>0</UpdateFlashBeforeDebugging>
+            <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
             <DriverSelection>4096</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -322,7 +323,7 @@
             <wLevel>0</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>0</uC99>
+            <uC99>1</uC99>
             <useXO>0</useXO>
             <v6Lang>0</v6Lang>
             <v6LangP>0</v6LangP>
@@ -459,11 +460,21 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\clock.c</FilePath>
             </File>
+            <File>
+              <FileName>supporting_functions.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\supporting_functions.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>Accelerometer</GroupName>
           <Files>
+            <File>
+              <FileName>LIS3DSH.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\LIS3DSH.h</FilePath>
+            </File>
             <File>
               <FileName>LIS3DSH.c</FileName>
               <FileType>1</FileType>
@@ -933,11 +944,21 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\clock.c</FilePath>
             </File>
+            <File>
+              <FileName>supporting_functions.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\supporting_functions.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>Accelerometer</GroupName>
           <Files>
+            <File>
+              <FileName>LIS3DSH.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\LIS3DSH.h</FilePath>
+            </File>
             <File>
               <FileName>LIS3DSH.c</FileName>
               <FileType>1</FileType>
@@ -1406,11 +1427,21 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\clock.c</FilePath>
             </File>
+            <File>
+              <FileName>supporting_functions.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\supporting_functions.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>Accelerometer</GroupName>
           <Files>
+            <File>
+              <FileName>LIS3DSH.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\LIS3DSH.h</FilePath>
+            </File>
             <File>
               <FileName>LIS3DSH.c</FileName>
               <FileType>1</FileType>
