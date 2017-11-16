@@ -27,7 +27,7 @@ extern void initializeLED_IO			(void);
 extern void start_Thread_LED			(void);
 extern void Thread_LED(void const *argument);
 extern osThreadId tid_Thread_LED;
-extern osThreadId tid_Thread_keypad, tid_Thread_acc;
+extern osThreadId tid_Thread_keypad, tid_Thread_acc, tid_Thread_segment_display;
 /**
 	These lines are mandatory to make CMSIS-RTOS RTX work with te new Cube HAL
 */
@@ -49,10 +49,14 @@ int main (void) {
   HAL_Init();                               /* Initialize the HAL Library     */
 
   SystemClock_Config();                     /* Configure the System Clock     */
+  initSegmentDisplay();
+  initializeACC();
+  initKeypad();
   initializeLED_IO();                       /* Initialize LED GPIO Buttons    */
   start_Thread_LED();                       /* Create LED thread              */
 	start_thread_keypad();
   start_thread_acc();
+  start_thread_segment_display();
 
 	osKernelStart();                          /* start thread execution         */
 }

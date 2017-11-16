@@ -20,9 +20,7 @@ void start_thread_keypad (void) {
 }
 
 void Thread_keypad (void const *argument) {
-	initKeypad();
   while(1) {
-    osDelay(230);
   }
 }
 

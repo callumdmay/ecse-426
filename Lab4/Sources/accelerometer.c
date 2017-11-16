@@ -27,16 +27,17 @@ double ACC_CALIBRATION_MATRIX[4][3] = {
 osThreadId tid_Thread_acc;                              // thread id
 osThreadDef(Thread_acc, osPriorityNormal, 1, 0);
 
+//Start thread for ACC
 void start_thread_acc (void) {
 	tid_Thread_acc = osThreadCreate(osThread(Thread_acc), NULL);
 }
 
+//accelerometer thread entry point function
 void Thread_acc (void const *argument) {
-	initializeACC();
   while(1) {
-    osDelay(230);
   }
 }
+
 //initialize accelerometer with desired parameters
 void initializeACC(void){
   Acc_instance.Axes_Enable				= LIS3DSH_XYZ_ENABLE;

@@ -1,8 +1,24 @@
 #include "stm32f4xx_hal.h"
+#include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 
-static void updateDigit(int digit, int value);
-static void updateSegments(int value);
+void Thread_segment_display (void const *argument);
+void updateDigit(int digit, int value);
+void updateSegments(int value);
 
+osThreadId tid_Thread_segment_display;                              // thread id
+osThreadDef(Thread_segment_display, osPriorityNormal, 1, 0);
+
+//Start thread for ACC
+void start_thread_segment_display (void) {
+	tid_Thread_segment_display = osThreadCreate(osThread(Thread_segment_display), NULL);
+}
+
+//accelerometer thread entry point function
+void Thread_segment_display (void const *argument) {
+  while(1) {
+
+  }
+}
 void initSegmentDisplay(void) {
 
   //Display segments
@@ -43,7 +59,7 @@ void updateSegmentDisplay(char *num_buffer) {
 }
 
 //Given a digit index and value, update that value on the 7 segment
-static void updateDigit(int digit, int value) {
+void updateDigit(int digit, int value) {
   HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET); //All digits off
   updateSegments(value);
 
@@ -64,7 +80,7 @@ static void updateDigit(int digit, int value) {
 }
 
 //Update segments for a specific digit
-static void updateSegments(int value) {
+void updateSegments(int value) {
     if(value == -1) {
       HAL_GPIO_WritePin(GPIOD, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11, GPIO_PIN_RESET);
       HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13, GPIO_PIN_RESET);

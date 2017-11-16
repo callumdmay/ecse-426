@@ -1,6 +1,6 @@
 #ifndef H_SEGMENT_DISPLAY
 #define H_SEGMENT_DISPLAY
 
-void updateSegmentDisplay(char *num_buffer);
-void initSegmentDisplay(void);
+void start_thread_segment_display (void);
+
 #endif
