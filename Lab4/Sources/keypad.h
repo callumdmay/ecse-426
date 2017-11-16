@@ -1,6 +1,7 @@
 #ifndef KEYPAD
 #define KEYPAD
 #include "stdbool.h"
+#include "cmsis_os.h"
 
 enum display_state {ROLL, PITCH};
 enum display_type {MEASURED, ENTERED};
@@ -13,6 +14,11 @@ struct keypadState {
 	enum display_type disp_type;
 	enum display_state disp_state;
 };
+
+extern struct keypadState kpState;
+
+//Create our keypad struct mutex
+extern osMutexId keypad_mutex;
 
 #define DEBOUNCE_THRESHOLD 3
 

@@ -8,8 +8,6 @@ void updateSegmentDisplay(char *num_buffer);
 void updateDigit(int digit, int value);
 void updateSegments(int value);
 
-extern struct keypadState kpState;
-extern osMutexId keypad_mutex;
 osThreadId tid_Thread_segment_display;                              // thread id
 osThreadDef(Thread_segment_display, osPriorityNormal, 1, 0);
 

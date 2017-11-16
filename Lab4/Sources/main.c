@@ -51,16 +51,16 @@ int main (void) {
 	MX_GPIO_Init();
 
   //Init functions
+  initKeypad();
   initSegmentDisplay();
   initializeACC();
-  initKeypad();
 	ITInit();
 
   //Start threads
-	start_thread_keypad();
-  //start_thread_acc();
+  start_thread_keypad();
+  start_thread_acc();
   start_thread_segment_display();
-  //start_thread_LED();
+  start_thread_LED();
 
 	osKernelStart();                          /* start thread execution         */
 }
