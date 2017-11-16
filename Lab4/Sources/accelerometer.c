@@ -2,6 +2,9 @@
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
 #include "keypad.h"
+#include "filter.h"
+#include "accelerometer.h"
+
 #include <math.h>
 #include <stdlib.h>
 
@@ -11,11 +14,20 @@ float* getACC(float *arr);
 void conversion(float acc[3], float out[2]);
 void comparison (float actual[2], int pitch, int roll, int diff[2]);
 void getNormalizedAcc(float acc[3], float output[3]);
+float buffer[3];
+int comparedValues[2];
+float convertedValues[2];
+osMutexId conversion_mutex;
+osMutexId comparison_mutex;
+	
+osMutexDef(conversion_mutex);
+osMutexDef(comparison_mutex);
 
 LIS3DSH_InitTypeDef Acc_instance;
 LIS3DSH_DRYInterruptConfigTypeDef AccIT;
 GPIO_InitTypeDef GPIO_InitStruct;
 SPI_HandleTypeDef hspi;
+
 
 double ACC_CALIBRATION_MATRIX[4][3] = {
 														{0.000975570176,-0.0000179726958, 0.0000118904418},
@@ -33,7 +45,25 @@ void start_thread_acc (void) {
 
 //accelerometer thread entry point function
 void Thread_acc (void const *argument) {
+
+	float filteredValues[3];
+	float normalizedValues[3];
+	
+	
+	
+	
   while(1) {
+		osSignalWait(0x01, 0);
+		filterValues(buffer, filteredValues);
+		getNormalizedAcc(filteredValues, normalizedValues);
+		
+		
+		conversion(normalizedValues, convertedValues);
+		
+		
+		
+		comparison(convertedValues,PITCH,ROLL, comparedValues);
+		
   }
 }
 
@@ -75,7 +105,6 @@ void ITInit(void){
 //get accelerometer raw data
 float* getACC(float *arr) {
   uint8_t status;
-  float buffer[3];
   LIS3DSH_Read (&status, LIS3DSH_STATUS, 1);
   //The first four bits denote if we have new data on all XYZ axes,
   //Z axis only, Y axis only or Z axis only. If any or all changed, proceed

@@ -23,6 +23,8 @@
 #include "gpio.h"
 
 extern osThreadId tid_Thread_keypad, tid_Thread_acc, tid_Thread_segment_display, tid_Thread_LED;
+void EXTI0_IRQHandler(void);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 /**
 	These lines are mandatory to make CMSIS-RTOS RTX work with te new Cube HAL
@@ -52,6 +54,7 @@ int main (void) {
   initSegmentDisplay();
   initializeACC();
   initKeypad();
+	ITInit();
 
   //Start threads
 	start_thread_keypad();
@@ -61,3 +64,13 @@ int main (void) {
 
 	osKernelStart();                          /* start thread execution         */
 }
+void EXTI0_IRQHandler(void)
+{
+	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+	
+}
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  osSignalSet(tid_Thread_acc, 0x01);
+}
+
