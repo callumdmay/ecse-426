@@ -1,10 +1,14 @@
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
+#include "segment_display.h"
+#include "keypad.h"
 
 void Thread_segment_display (void const *argument);
+void updateSegmentDisplay(char *num_buffer);
 void updateDigit(int digit, int value);
 void updateSegments(int value);
 
+extern struct keypadState kpState;
 osThreadId tid_Thread_segment_display;                              // thread id
 osThreadDef(Thread_segment_display, osPriorityNormal, 1, 0);
 
@@ -15,9 +19,31 @@ void start_thread_segment_display (void) {
 
 //accelerometer thread entry point function
 void Thread_segment_display (void const *argument) {
-  while(1) {
-
-  }
+	while(1) {
+    osDelay(5);
+    if (kpState.operation_mode == true) {
+      char angle[3]= {'\0', '\0', '\0'};
+      if (kpState.disp_state == ROLL) {
+        if (kpState.disp_type == ENTERED) {
+          sprintf(angle, "%d", kpState.roll_angle);
+        } else {
+         // int roll = (int)axis_angles[0];
+          //sprintf(angle, "%d", roll);
+        }
+        updateSegmentDisplay(angle);
+      } else if (kpState.disp_state == PITCH) {
+        if (kpState.disp_type == ENTERED) {
+          sprintf(angle, "%d", kpState.pitch_angle);
+        } else {
+          //int pitch = (int)axis_angles[1];
+          //sprintf(angle, "%d", pitch);
+        }
+        updateSegmentDisplay(angle);
+      }
+    } else {
+      updateSegmentDisplay(kpState.num_buffer);
+    }
+	}
 }
 
 void initSegmentDisplay(void) {

@@ -10,6 +10,7 @@ void Thread_keypad (void const *argument);      // thread function
 
 GPIO_InitTypeDef GPIO_InitDef_Row;
 GPIO_InitTypeDef GPIO_InitDef_Col;
+struct keypadState kpState;
 
 osThreadId tid_Thread_keypad;                              // thread id
 osThreadDef(Thread_keypad, osPriorityNormal, 1, 0);
@@ -19,7 +20,10 @@ void start_thread_keypad (void) {
 }
 
 void Thread_keypad (void const *argument) {
+	initKeypadState(&kpState);
   while(1) {
+    osDelay(20);
+    processKeypadInput(&kpState);
   }
 }
 
@@ -206,12 +210,7 @@ void processKeypadInput(struct keypadState *state) {
 				} else if (debounce_counter >= 400 && last_char == '*' && state-> pitch_angle != -1 && state->roll_angle != -1) {
 					state->operation_mode = false;
 				} else if (debounce_counter >= 100 && last_char == '*') {
-					if (state->operation_mode ==  true) {
-						initKeypadState(state);
-						//Turn the LED off
-						int zero[2]={0};
-						LEDSet(zero);
-					}
+					initKeypadState(state);
 				} else if (debounce_counter >= DEBOUNCE_THRESHOLD) {
 					updateKeypadState(state, last_char);
 				}

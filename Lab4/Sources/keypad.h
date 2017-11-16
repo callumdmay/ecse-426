@@ -14,7 +14,7 @@ struct keypadState {
 	enum display_state disp_state;
 };
 
-#define DEBOUNCE_THRESHOLD 10
+#define DEBOUNCE_THRESHOLD 3
 
 void start_thread_keypad (void);
 void initKeypad(void);

@@ -20,6 +20,7 @@
 #include "tim.h"
 #include "clock.h"
 #include "keypad.h"
+#include "gpio.h"
 
 extern osThreadId tid_Thread_keypad, tid_Thread_acc, tid_Thread_segment_display, tid_Thread_LED;
 
@@ -45,6 +46,8 @@ int main (void) {
 
   SystemClock_Config();                     /* Configure the System Clock     */
 
+	MX_GPIO_Init();
+
   //Init functions
   initSegmentDisplay();
   initializeACC();
@@ -52,9 +55,9 @@ int main (void) {
 
   //Start threads
 	start_thread_keypad();
-  start_thread_acc();
+  //start_thread_acc();
   start_thread_segment_display();
-  start_thread_LED();
+  //start_thread_LED();
 
 	osKernelStart();                          /* start thread execution         */
 }
