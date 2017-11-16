@@ -12,14 +12,24 @@ GPIO_InitTypeDef GPIO_InitDef_Row;
 GPIO_InitTypeDef GPIO_InitDef_Col;
 struct keypadState kpState;
 
+//Create our keypad struct mutex
+osMutexId keypad_mutex;
+osMutexDef(keypad_mutex);
+
+//create our keypad thread
 osThreadId tid_Thread_keypad;                              // thread id
 osThreadDef(Thread_keypad, osPriorityNormal, 1, 0);
 
+
+//Start our keypad thread
 void start_thread_keypad (void) {
 	tid_Thread_keypad = osThreadCreate(osThread(Thread_keypad), NULL);
 }
 
+
+//keypad thread entry point function
 void Thread_keypad (void const *argument) {
+	keypad_mutex = osMutexCreate(osMutex(keypad_mutex));
 	initKeypadState(&kpState);
   while(1) {
     osDelay(20);
@@ -27,6 +37,7 @@ void Thread_keypad (void const *argument) {
   }
 }
 
+//Initialize the struct that maintains the keypad state
 void initKeypadState(struct keypadState *state) {
 	state->roll_angle = -1;
 	state->pitch_angle = -1;
@@ -125,7 +136,6 @@ void updateKeypadState(struct keypadState *state, char val) {
 			}
 			break;
 		case '#':
-
 			if (state->operation_mode == false) {
 				for (i = 0; i < length; i++) {
 					if (state->num_buffer[i] != '\0') {
@@ -187,12 +197,13 @@ void updateKeypadState(struct keypadState *state, char val) {
 	}
 }
 
-//This function debounces the keypad input into a usable value
+//This function debounces the keypad input into a useable value, and passes that value to updateKeypadState
 void processKeypadInput(struct keypadState *state) {
 	static int debounce_counter = 0;
 	static int debounce_down_counter = DEBOUNCE_THRESHOLD;
 	static char last_char = '\0';
 
+	//First scan for a character
 	char keypad_char = scanKeypad();
 	if (keypad_char != '\0') {
 		if (last_char == '\0') {
@@ -212,7 +223,10 @@ void processKeypadInput(struct keypadState *state) {
 				} else if (debounce_counter >= 100 && last_char == '*') {
 					initKeypadState(state);
 				} else if (debounce_counter >= DEBOUNCE_THRESHOLD) {
+					osMutexWait(keypad_mutex, osWaitForever);
 					updateKeypadState(state, last_char);
+          osMutexRelease(keypad_mutex);
+
 				}
 				debounce_down_counter = DEBOUNCE_THRESHOLD;
 				last_char = '\0';

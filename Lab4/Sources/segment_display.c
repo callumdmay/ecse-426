@@ -9,6 +9,7 @@ void updateDigit(int digit, int value);
 void updateSegments(int value);
 
 extern struct keypadState kpState;
+extern osMutexId keypad_mutex;
 osThreadId tid_Thread_segment_display;                              // thread id
 osThreadDef(Thread_segment_display, osPriorityNormal, 1, 0);
 
@@ -21,6 +22,7 @@ void start_thread_segment_display (void) {
 void Thread_segment_display (void const *argument) {
 	while(1) {
     osDelay(5);
+    osMutexWait(keypad_mutex, osWaitForever);
     if (kpState.operation_mode == true) {
       char angle[3]= {'\0', '\0', '\0'};
       if (kpState.disp_state == ROLL) {
@@ -30,6 +32,7 @@ void Thread_segment_display (void const *argument) {
          // int roll = (int)axis_angles[0];
           //sprintf(angle, "%d", roll);
         }
+        osMutexRelease(keypad_mutex);
         updateSegmentDisplay(angle);
       } else if (kpState.disp_state == PITCH) {
         if (kpState.disp_type == ENTERED) {
@@ -38,9 +41,11 @@ void Thread_segment_display (void const *argument) {
           //int pitch = (int)axis_angles[1];
           //sprintf(angle, "%d", pitch);
         }
+        osMutexRelease(keypad_mutex);
         updateSegmentDisplay(angle);
       }
     } else {
+      osMutexRelease(keypad_mutex);
       updateSegmentDisplay(kpState.num_buffer);
     }
 	}
