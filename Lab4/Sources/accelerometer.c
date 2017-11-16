@@ -59,6 +59,34 @@ void Thread_acc (void const *argument) {
   }
 }
 
+void ACC_PowerDown(void)
+{
+	 uint8_t regbits;
+
+  //read current register
+  LIS3DSH_Read(&regbits, LIS3DSH_CTRL_REG4, 1);
+
+  //set desired register values (ODR bits to 0000)
+  regbits &= (uint8_t)0x0F;
+
+  //write to register
+  LIS3DSH_Write(&regbits, LIS3DSH_CTRL_REG4, 1);
+}
+
+void ACC_PowerUp(void)
+{
+	 uint8_t regbits;
+
+  //read current register
+  LIS3DSH_Read(&regbits, LIS3DSH_CTRL_REG4, 1);
+
+  //set desired register values (ODR bits to 0101)
+  regbits |= (uint8_t)0x50;
+
+  //write to register
+  LIS3DSH_Write(&regbits, LIS3DSH_CTRL_REG4, 1);
+}
+
 void EXTI0_IRQHandler(void)
 {
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
