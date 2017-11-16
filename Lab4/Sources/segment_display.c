@@ -15,7 +15,9 @@ osThreadDef(Thread_segment_display, osPriorityNormal, 1, 0);
 
 //Start thread for segment display
 void start_thread_segment_display (void) {
-	tid_Thread_segment_display = osThreadCreate(osThread(Thread_segment_display), NULL);
+	if (tid_Thread_segment_display == NULL) {
+		tid_Thread_segment_display = osThreadCreate(osThread(Thread_segment_display), NULL);
+	}
 }
 
 //Stop thread for segment display
@@ -26,7 +28,7 @@ void stop_thread_segment_display (void) {
 //accelerometer thread entry point function
 void Thread_segment_display (void const *argument) {
 	while(1) {
-    osDelay(2);
+    osDelay(1);
 
     //Check for thread sleep mode
     osEvent event = osSignalWait(0x05, 0);

@@ -23,6 +23,7 @@ void start_thread_LED (void) {
 //Entry point function for LED thread
 void Thread_LED (void const *argument) {
   while(1) {
+		osDelay(5);
     //Check for thread sleep mode
     osEvent event = osSignalWait(0x05, 0);
     if (event.status == osEventSignal) {
