@@ -21,7 +21,7 @@
 #include "clock.h"
 #include "keypad.h"
 
-extern osThreadId tid_Thread_keypad, tid_Thread_acc, tid_Thread_segment_display;
+extern osThreadId tid_Thread_keypad, tid_Thread_acc, tid_Thread_segment_display, tid_Thread_LED;
 
 /**
 	These lines are mandatory to make CMSIS-RTOS RTX work with te new Cube HAL
@@ -54,6 +54,7 @@ int main (void) {
 	start_thread_keypad();
   start_thread_acc();
   start_thread_segment_display();
+  start_thread_LED();
 
 	osKernelStart();                          /* start thread execution         */
 }
