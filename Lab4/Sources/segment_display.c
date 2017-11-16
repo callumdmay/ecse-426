@@ -4,33 +4,48 @@
 #include "keypad.h"
 #include "accelerometer.h"
 
+//Prototypes
 void Thread_segment_display (void const *argument);
 void updateSegmentDisplay(char *num_buffer);
 void updateDigit(int digit, int value);
 void updateSegments(int value);
 
-osThreadId tid_Thread_segment_display;                              // thread id
+osThreadId tid_Thread_segment_display;
 osThreadDef(Thread_segment_display, osPriorityNormal, 1, 0);
 
-//Start thread for ACC
+//Start thread for segment display
 void start_thread_segment_display (void) {
 	tid_Thread_segment_display = osThreadCreate(osThread(Thread_segment_display), NULL);
+}
+
+//Stop thread for segment display
+void stop_thread_segment_display (void) {
+	osThreadTerminate(tid_Thread_segment_display);
 }
 
 //accelerometer thread entry point function
 void Thread_segment_display (void const *argument) {
 	while(1) {
     osDelay(2);
+
+    //Check for thread sleep mode
+    osEvent event = osSignalWait(0x05, 0);
+    if (event.status == osEventSignal) {
+      updateSegmentDisplay("\0\0\0\0");
+      osSignalWait(0x04, osWaitForever);
+    }
+
     osMutexWait(keypad_mutex, osWaitForever);
+    //If we're in operation_mode we'll display the angles, else just display the buffer value
     if (kpState.operation_mode == true) {
       char angle[3]= {'\0', '\0', '\0'};
       if (kpState.disp_state == ROLL) {
         if (kpState.disp_type == ENTERED) {
           sprintf(angle, "%d", kpState.roll_angle);
         } else {
-          //osMutexWait(acc_mutex, osWaitForever);
+          osMutexWait(acc_mutex, osWaitForever);
           int roll = (int)axis_angles[0];
-          //osMutexRelease(acc_mutex);
+          osMutexRelease(acc_mutex);
           sprintf(angle, "%d", roll);
         }
         osMutexRelease(keypad_mutex);
@@ -39,9 +54,9 @@ void Thread_segment_display (void const *argument) {
         if (kpState.disp_type == ENTERED) {
           sprintf(angle, "%d", kpState.pitch_angle);
         } else {
-        //  osMutexWait(acc_mutex, osWaitForever);
+         osMutexWait(acc_mutex, osWaitForever);
           int pitch = (int)axis_angles[1];
-        //  osMutexRelease(acc_mutex);
+         osMutexRelease(acc_mutex);
           sprintf(angle, "%d", pitch);
         }
         osMutexRelease(keypad_mutex);
@@ -54,8 +69,8 @@ void Thread_segment_display (void const *argument) {
 	}
 }
 
+//Init the GPIO pins for the segment display
 void initSegmentDisplay(void) {
-
   //Display segments
   GPIO_InitTypeDef GPIO_InitDef1;
   GPIO_InitDef1.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11;

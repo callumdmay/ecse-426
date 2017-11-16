@@ -5,11 +5,13 @@
 #include "accelerometer.h"
 #include <math.h>
 
+//Prototypes
 void Thread_acc (void const *argument);
-void ITInit(void);
+void initAccInterrupt(void);
 void getACC(float *arr);
 void conversion(float acc[3], float out[2]);
 void getNormalizedAcc(float acc[3], float output[3]);
+
 int comparedValues[2];
 float axis_angles[2];
 float raw_acc_data_buffer[3];
@@ -21,7 +23,7 @@ LIS3DSH_DRYInterruptConfigTypeDef AccIT;
 GPIO_InitTypeDef GPIO_InitStruct;
 SPI_HandleTypeDef hspi;
 
-
+//Matrix of accelerometer calibration values
 double ACC_CALIBRATION_MATRIX[4][3] = {
 														{0.000975570176,-0.0000179726958, 0.0000118904418},
 														{-0.00000826743781, 0.00100064254, -0.00000108576944},
@@ -33,19 +35,24 @@ osThreadDef(Thread_acc, osPriorityNormal, 1, 0);
 
 //Start thread for ACC
 void start_thread_acc (void) {
-	tid_Thread_acc = osThreadCreate(osThread(Thread_acc), NULL);
+  if (tid_Thread_acc == NULL) {
+    tid_Thread_acc = osThreadCreate(osThread(Thread_acc), NULL);
+  }
 }
 
 //accelerometer thread entry point function
 void Thread_acc (void const *argument) {
-
 	float filteredValues[3];
 	float normalizedValues[3];
+
   while(1) {
 		osSignalWait(0x01, osWaitForever);
     getACC(raw_acc_data_buffer);
+    //filter values using biquad filter
 		filterValues(raw_acc_data_buffer, filteredValues);
-		getNormalizedAcc(filteredValues, normalizedValues);
+    //Normalize the values
+    getNormalizedAcc(filteredValues, normalizedValues);
+    //Perform conversion between normalized cartesian coordinates and axis angles pitch and roll
     osMutexWait(acc_mutex, osWaitForever);
 		conversion(normalizedValues, axis_angles);
     osMutexRelease(acc_mutex);
@@ -77,7 +84,7 @@ void initializeACC(void){
 }
 
 //initialize interrupt for accelerometer
-void ITInit(void){
+void initAccInterrupt(void){
   AccIT.Dataready_Interrupt = LIS3DSH_DATA_READY_INTERRUPT_ENABLED;
   AccIT.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
   AccIT.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_PULSED;

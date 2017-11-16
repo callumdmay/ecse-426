@@ -6,22 +6,38 @@
 #include "keypad.h"
 #include <stdlib.h>
 
+//Prototypes
 void LEDSet(int diff[2]);
 void comparison (float actual[2], int pitch, int roll, int diff[2]);
 void Thread_LED (void const *argument);
 
 osThreadId tid_Thread_LED;                              // thread id
 osThreadDef(Thread_LED, osPriorityNormal, 1, 0);
-int compared_values[2];
+
 void start_thread_LED (void) {
-	tid_Thread_LED = osThreadCreate(osThread(Thread_LED), NULL);
+  if (tid_Thread_LED == NULL) {
+    tid_Thread_LED = osThreadCreate(osThread(Thread_LED), NULL);
+  }
 }
 
+//Entry point function for LED thread
 void Thread_LED (void const *argument) {
   while(1) {
+    //Check for thread sleep mode
+    osEvent event = osSignalWait(0x05, 0);
+    if (event.status == osEventSignal) {
+      osSignalWait(0x04, osWaitForever);
+    }
+
+    //Wait for accelerometer and keypad state to be free
     osMutexWait(acc_mutex, osWaitForever);
     osMutexWait(keypad_mutex, osWaitForever);
+
+    //Perform comparison of keypad values and measured accelerometer values
+    int compared_values[2];
     comparison(axis_angles, kpState.pitch_angle, kpState.roll_angle, compared_values);
+
+    //Release mutex's before updating the LED's
     osMutexRelease(keypad_mutex);
     osMutexRelease(acc_mutex);
 		LEDSet(compared_values);

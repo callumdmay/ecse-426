@@ -2,17 +2,23 @@
 #include "keypad.h"
 #include "LED.h"
 #include "accelerometer.h"
+#include "segment_display.h"
 
+//Prototypes
 void initKeypadState(struct keypadState *state);
 void updateKeypadState(struct keypadState *state, char val);
 void processKeypadInput(struct keypadState *kpState);
-void Thread_keypad (void const *argument);      // thread function
-void startPeripherals(void);
-void stopPeripherals(void);
+void Thread_keypad (void const *argument);
+void enterLowPowerMode(struct keypadState *state);
+void enterOperationMode(struct keypadState *state);
+void startPeripheralThreads(struct keypadState *state);
+void suspendPeripheralThreads(void);
 
 GPIO_InitTypeDef GPIO_InitDef_Row;
 GPIO_InitTypeDef GPIO_InitDef_Col;
 struct keypadState kpState;
+
+extern osThreadId tid_Thread_acc, tid_Thread_segment_display, tid_Thread_LED;
 
 //Create our keypad struct mutex
 osMutexId keypad_mutex;
@@ -67,7 +73,7 @@ void initKeypad(void) {
 	HAL_GPIO_Init(GPIOE, &GPIO_InitDef_Col);
 }
 
-//Scan keypad for value
+//Scan keypad for value, return char value
 char scanKeypad(void) {
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10, GPIO_PIN_RESET);
@@ -166,8 +172,7 @@ void updateKeypadState(struct keypadState *state, char val) {
 					}
 				}
 
-				state->operation_mode = true;
-        startPeripherals();
+        startPeripheralThreads(state);
 			} else {
 				if (state->disp_type == MEASURED) {
 					state->disp_type = ENTERED;
@@ -218,13 +223,13 @@ void processKeypadInput(struct keypadState *state) {
 				debounce_down_counter--;
 			} else {
         osMutexWait(keypad_mutex, osWaitForever);
-				if (debounce_counter >= 400 && last_char == '#' && state-> pitch_angle != -1 && state->roll_angle != -1) {
-					state->operation_mode = true;
-          startPeripherals();
-				} else if (debounce_counter >= 400 && last_char == '*' && state-> pitch_angle != -1 && state->roll_angle != -1) {
-					state->operation_mode = false;
-				} else if (debounce_counter >= 100 && last_char == '*') {
+				if (debounce_counter >= 80 && last_char == '#' && state-> pitch_angle != -1 && state->roll_angle != -1) {
+          enterOperationMode(state);
+				} else if (debounce_counter >= 80 && last_char == '*' && state-> pitch_angle != -1 && state->roll_angle != -1) {
+          enterLowPowerMode(state);
+				} else if (debounce_counter >= 40 && last_char == '*') {
 					initKeypadState(state);
+          suspendPeripheralThreads();
 				} else if (debounce_counter >= DEBOUNCE_THRESHOLD) {
 					updateKeypadState(state, last_char);
 				}
@@ -236,11 +241,26 @@ void processKeypadInput(struct keypadState *state) {
 	}
 }
 
-void startPeripherals(void) {
-  start_thread_acc();
-  start_thread_LED();
+
+void enterLowPowerMode(struct keypadState *state) {
+  state->operation_mode = false;
+  osSignalSet(tid_Thread_LED, 0x05);
+  osSignalSet(tid_Thread_segment_display, 0x05);
 }
 
-void stopPeripherals(void) {
+void enterOperationMode(struct keypadState *state) {
+  state->operation_mode = true;
+  osSignalSet(tid_Thread_LED, 0x04);
+  osSignalSet(tid_Thread_segment_display, 0x04);
+}
 
+void startPeripheralThreads(struct keypadState *state) {
+  state->operation_mode = true;
+  start_thread_acc();
+  start_thread_LED();
+  osSignalSet(tid_Thread_LED, 0x04);
+}
+
+void suspendPeripheralThreads(void) {
+  osSignalSet(tid_Thread_LED, 0x05);
 }

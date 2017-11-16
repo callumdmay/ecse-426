@@ -6,6 +6,7 @@
 enum display_state {ROLL, PITCH};
 enum display_type {MEASURED, ENTERED};
 
+//This struct defines all states of the keypad
 struct keypadState {
 	char num_buffer[3];
 	int roll_angle;

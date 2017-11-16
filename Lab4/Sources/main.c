@@ -44,9 +44,7 @@ int main (void) {
   osKernelInitialize();                     /* initialize CMSIS-RTOS          */
 
   HAL_Init();                               /* Initialize the HAL Library     */
-
   SystemClock_Config();                     /* Configure the System Clock     */
-
 	MX_GPIO_Init();
 
   //Init 4 LEDs with PWM
@@ -60,7 +58,7 @@ int main (void) {
   initKeypad();
   initSegmentDisplay();
   initializeACC();
-	ITInit();
+	initAccInterrupt();
 
   //Start threads
   start_thread_keypad();
