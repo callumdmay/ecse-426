@@ -385,11 +385,6 @@
               <FilePath>.\Sources\main.c</FilePath>
             </File>
             <File>
-              <FileName>Thread_LED.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Thread_LED.c</FilePath>
-            </File>
-            <File>
               <FileName>supporting_functions.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\supporting_functions.c</FilePath>
@@ -864,11 +859,6 @@
               <FilePath>.\Sources\main.c</FilePath>
             </File>
             <File>
-              <FileName>Thread_LED.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Thread_LED.c</FilePath>
-            </File>
-            <File>
               <FileName>supporting_functions.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\supporting_functions.c</FilePath>
@@ -1340,11 +1330,6 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\main.c</FilePath>
-            </File>
-            <File>
-              <FileName>Thread_LED.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Thread_LED.c</FilePath>
             </File>
             <File>
               <FileName>supporting_functions.c</FileName>

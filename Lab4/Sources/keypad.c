@@ -7,7 +7,6 @@ void initKeypadState(struct keypadState *state);
 void updateKeypadState(struct keypadState *state, char val);
 void processKeypadInput(struct keypadState *kpState);
 void Thread_keypad (void const *argument);      // thread function
-void initKeypad(void);
 
 GPIO_InitTypeDef GPIO_InitDef_Row;
 GPIO_InitTypeDef GPIO_InitDef_Col;

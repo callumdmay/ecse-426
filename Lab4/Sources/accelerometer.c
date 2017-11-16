@@ -6,7 +6,6 @@
 #include <stdlib.h>
 
 void Thread_acc (void const *argument);
-void initializeACC(void);
 void ITInit(void);
 float* getACC(float *arr);
 void conversion(float acc[3], float out[2]);

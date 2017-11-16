@@ -19,6 +19,7 @@ void Thread_segment_display (void const *argument) {
 
   }
 }
+
 void initSegmentDisplay(void) {
 
   //Display segments

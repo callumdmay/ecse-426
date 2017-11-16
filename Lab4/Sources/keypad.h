@@ -17,5 +17,6 @@ struct keypadState {
 #define DEBOUNCE_THRESHOLD 10
 
 void start_thread_keypad (void);
+void initKeypad(void);
 
 #endif
