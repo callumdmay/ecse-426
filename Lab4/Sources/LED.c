@@ -46,7 +46,7 @@ void Thread_LED (void const *argument) {
 }
 
 void LED_PowerUp (void)
-{
+{	//start PWM LEDs
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
@@ -54,7 +54,7 @@ void LED_PowerUp (void)
 }
 
 void LED_PowerDown (void)
-{
+{	//stop PWM LEDs
 	HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_1);
   HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_2);
   HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3);
@@ -62,11 +62,12 @@ void LED_PowerDown (void)
 }
 
 void LEDSet(int diff[2]) {
+	
   int MAX_DIFFERENCE = 180;
   int roll;
   int pitch;
 	int MAX_VALUE = 100;
-
+	//percentage of the maximum difference (180 deg) of the pitch and roll values
   if (diff[0] > 5) {
     roll = diff[0] * MAX_VALUE / MAX_DIFFERENCE;
   } else {
@@ -77,7 +78,8 @@ void LEDSet(int diff[2]) {
   } else {
     pitch = 0;
   }
-
+	
+	//set PWM duty cycle
   __HAL_TIM_SET_COMPARE( & htim4, TIM_CHANNEL_1, roll);
   __HAL_TIM_SET_COMPARE( & htim4, TIM_CHANNEL_3, roll);
 
@@ -85,7 +87,7 @@ void LEDSet(int diff[2]) {
   __HAL_TIM_SET_COMPARE( & htim4, TIM_CHANNEL_4, pitch);
 }
 
-
+//compare actual angle to entered value
 void comparison (float actual[2], int pitch, int roll, int diff[2]) {
   //pitch
 	diff[0] = abs(pitch - (int)actual[0]);

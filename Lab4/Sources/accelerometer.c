@@ -87,11 +87,14 @@ void ACC_PowerUp(void)
   LIS3DSH_Write(&regbits, LIS3DSH_CTRL_REG4, 1);
 }
 
+//Accelerometer intterupt handler (call HAL IRQ Handler)
 void EXTI0_IRQHandler(void)
 {
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 
 }
+
+//HAL IRQ Handler callback 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   osSignalSet(tid_Thread_acc, 0x01);
@@ -153,6 +156,7 @@ void conversion(float acc[3], float conv[2]) {
   conv[1] = atan(acc[1]/(sqrtf(powf(acc[0], 2) + powf(acc[2], 2))));
 
 	float PI = 3.141592654;
+	//convert radians to angle
 	conv[0] = (conv[0]*180/PI)+90;
 	conv[1] = (conv[1]*180/PI)+90;
 }
